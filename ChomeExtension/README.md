@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# Chrome Extension with React
+
+A Chrome extension built with React that allows you to analyze web pages and save URLs.
+
+## Features
+
+- **Page Analysis**: Analyze the current page for metadata, headings, and element counts
+- **URL Saving**: Save URLs for later reference
+- **History Tracking**: View and manage your saved URLs
+- **Customizable Settings**: Configure the extension to your preferences
+
+## Installation
+
+### Development Mode
+
+1. Clone this repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Build the extension:
+   ```
+   npm run build
+   ```
+4. Open Chrome and navigate to `chrome://extensions/`
+5. Enable "Developer mode" (toggle in the top-right)
+6. Click "Load unpacked"
+7. Select the `build` folder from your project
+
+### Production Use
+
+The extension is not yet available on the Chrome Web Store.
+
+## Usage
+
+1. Click the extension icon in your Chrome toolbar
+2. The extension popup will show the current URL
+3. Use the "Analyze Page" button to get details about the current page
+4. Use the "Save URL" button to save the current URL to your history
+5. Switch between tabs using the navigation bar at the top:
+   - **Home**: Main extension interface
+   - **History**: View and manage saved URLs
+   - **Settings**: Configure extension settings
+
+## Development
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### Available Scripts
 
-In the project directory, you can run:
+- `npm start`: Run in development mode (note: not fully compatible with extension development)
+- `npm run build`: Build the extension for Chrome
+- `npm test`: Run tests
+- `npm run eject`: Eject from Create React App
 
-### `npm start`
+### Project Structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- `public/`: Static files including manifest.json and content/background scripts
+- `src/`: React source code
+  - `components/`: React components
+  - `styles/`: CSS files
+  - `chrome-api.js`: Utilities for working with Chrome APIs
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## License
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT
