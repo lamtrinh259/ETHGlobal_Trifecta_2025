@@ -14,7 +14,11 @@ define( 'DB_USER', 'wordpressuser' );
 define( 'DB_PASSWORD', 'password' );
 
 /** Database hostname */
-define( 'DB_HOST', 'localhost:/var/run/mysqld/mysqld.sock' );
+define( 'DB_HOST', 'localhost' );
+
+// Alternate configs to try if above doesn't work:
+// define( 'DB_HOST', '127.0.0.1' );
+// define( 'DB_HOST', 'localhost:/var/run/mysqld/mysqld.sock' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );

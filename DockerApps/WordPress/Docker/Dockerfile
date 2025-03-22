@@ -26,6 +26,9 @@ RUN apt-get update && apt-get install -y \
 RUN a2enmod rewrite
 COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
 
+# Configure MariaDB to listen on all interfaces
+RUN echo '[mysqld]\nbind-address = 0.0.0.0\nskip-networking = false\n' > /etc/mysql/mariadb.conf.d/50-server-networking.cnf
+
 # Set up MariaDB
 RUN service mariadb start && \
     mysql -e "CREATE DATABASE wordpress DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;" && \
@@ -45,6 +48,7 @@ RUN wget https://wordpress.org/latest.tar.gz && \
 
 # Configure WordPress
 COPY wp-config.php /var/www/html/
+COPY test-db-connection.php /var/www/html/
 
 # Install phpMyAdmin
 RUN mkdir /var/www/html/phpmyadmin && \
