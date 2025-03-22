@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "My React Chrome Extension",
-  "description": "A Chrome extension built with React",
+  "name": "TEE Shield",
+  "description": "TEE Shield",
   "version": "1.0",
   "action": {
     "default_popup": "index.html",
