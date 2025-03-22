@@ -17,4 +17,4 @@ fi
 
 # Run deployment
 echo "Starting deployment to Marlin TEE..."
-oyster-cvm deploy --wallet-private-key $PRIVATE_KEY --duration-in-minutes 10 --docker-compose docker-compose.yml 
+oyster-cvm deploy --wallet-private-key $PRIVATE_KEY --duration-in-minutes 5 --docker-compose docker-compose.yml 
