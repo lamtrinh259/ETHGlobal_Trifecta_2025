@@ -4,17 +4,19 @@
 import { useState } from "react"
 import Home from "./components/Home"
 import "./App.css"
+import HashComparison from "./components/HashComparison"
 
 function App() {
   const [activeTab, setActiveTab] = useState("home")
+  
 
   const renderContent = () => {
     switch(activeTab) {
       case "home":
         return <Home />
-      case "history":
+      case "comparison":
         // To be implemented
-        return <div>History tab content</div>
+        return <HashComparison/>
       case "settings":
         // To be implemented
         return <div>Settings tab content</div>
@@ -36,10 +38,10 @@ function App() {
               Home
             </div>
             <div 
-              className={`nav-tab ${activeTab === "history" ? "active" : ""}`}
-              onClick={() => setActiveTab("history")}
+              className={`nav-tab ${activeTab === "comparison" ? "active" : ""}`}
+              onClick={() => setActiveTab("comparison")}
             >
-              History
+              Hash comparison
             </div>
             <div 
               className={`nav-tab ${activeTab === "settings" ? "active" : ""}`}

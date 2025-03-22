@@ -65,3 +65,48 @@ export const sendMessageToBackground = async (message) => {
     });
   });
 }; 
+
+
+// Function to simulate getting the hash from the frontend
+export async function getFrontendHash(url) {
+  // In a real implementation, this would get the hash from the page
+  // For now, we'll generate a mock hash based on the URL
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const mockHash = generateMockHash(url)
+      resolve(mockHash)
+    }, 800)
+  })
+}
+
+// Function to simulate getting the hash from the smart contract
+export async function getContractHash(url) {
+  // In a real implementation, this would call your blockchain API
+  // For now, we'll simulate with a mock hash
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const mockHash = generateMockHash(url)
+      resolve(mockHash)
+    }, 1200)
+  })
+}
+// Helper function to generate a mock hash
+function generateMockHash(input) {
+  let hash = "0x"
+  const chars = "0123456789abcdef"
+  const inputStr = String(input)
+  
+  // Use the input to influence the hash, making it somewhat deterministic
+  let seed = 0
+  for (let i = 0; i < inputStr.length; i++) {
+    seed += inputStr.charCodeAt(i)
+  }
+  
+  // Generate a 64-character hex hash
+  for (let i = 0; i < 64; i++) {
+    const idx = (seed + i) % chars.length
+    hash += chars.charAt(idx)
+  }
+  
+  return hash
+}
