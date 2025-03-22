@@ -17,13 +17,11 @@ async function handle(request) {
     const res = await fetch(url);
     const data = await res.json();
 
-    console.log('data is', data);
-    
-    if (!data || typeof data.result !== 'string') {
+    if (!data || typeof data.value !== 'string') {
       return new Response('Invalid response from backend', { status: 500 });
     }
 
-    const result = data.result === value;
+    const result = data.value === value;
     console.log('result is', result);
     return new Response(JSON.stringify({ result }), {
       headers: { 'Content-Type': 'application/json' }
