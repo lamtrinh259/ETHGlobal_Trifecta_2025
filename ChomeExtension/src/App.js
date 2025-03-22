@@ -1,22 +1,91 @@
 "use client"
 
-import { useState } from "react"
+/*global chrome*/
+import { useState, useEffect } from "react"
+import { getCurrentTab } from "./chrome-api"
 import "./App.css"
 
 function App() {
   const [url, setUrl] = useState("https://www.google.com/")
   const [analysisResult, setAnalysisResult] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
 
-  const handleAnalyze = () => {
-    setAnalysisResult(
-      "Analyzing URL: " +
-        url +
-        "\n\nHash: 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069\nStatus: Verified ✓",
-    )
+  useEffect(() => {
+    async function fetchTabInfo() {
+      try {
+        const tab = await getCurrentTab()
+        if (tab) {
+          setUrl(tab.url)
+        }
+      } catch (error) {
+        console.error('Error fetching tab info:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTabInfo()
+  }, [])
+
+  const handleAnalyze = async () => {
+    try {
+      const tab = await getCurrentTab()
+      if (tab) {
+        chrome.tabs.sendMessage(
+          tab.id,
+          { action: 'analyze' }
+        )
+      }
+      
+      setAnalysisResult(
+        "Analyzing URL: " +
+          url +
+          "\n\nHash: 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069\nStatus: Verified ✓"
+      )
+    } catch (error) {
+      console.error('Error analyzing page:', error)
+      setAnalysisResult("Error analyzing page: " + error.message)
+    }
   }
 
-  const handleSave = () => {
-    setAnalysisResult("URL saved successfully: " + url)
+  const handleSave = async () => {
+    try {
+      const tab = await getCurrentTab()
+      await chrome.storage.local.set({ 
+        savedUrl: url, 
+        timestamp: new Date().toISOString() 
+      })
+      
+      // Also save to the savedUrls array
+      const data = await chrome.storage.local.get('savedUrls')
+      const savedUrls = data.savedUrls || []
+      
+      const newEntry = {
+        url: tab.url,
+        title: tab.title || 'Unknown',
+        timestamp: new Date().toISOString()
+      }
+      
+      savedUrls.unshift(newEntry)
+      
+      // Get maxHistory setting
+      const settingsData = await chrome.storage.local.get('settings')
+      const maxHistory = settingsData.settings?.maxHistory || 20
+      
+      // Limit to maxHistory entries
+      const updatedUrls = savedUrls.slice(0, maxHistory)
+      
+      await chrome.storage.local.set({ savedUrls: updatedUrls })
+      
+      setAnalysisResult("URL saved successfully: " + url)
+    } catch (error) {
+      console.error('Error saving data:', error)
+      setAnalysisResult("Failed to save URL: " + error.message)
+    }
+  }
+
+  if (isLoading) {
+    return <div className="app-container">Loading...</div>
   }
 
   return (
@@ -41,10 +110,17 @@ function App() {
 
         {/* Logo */}
         <div className="logo-container">
-          <div className="logo">
-            <div className="logo-dot"></div>
-            <span className="logo-text">TEE</span>
-          </div>
+          <img 
+            src="/logo512.png" 
+            alt="TEE Shield Logo" 
+            style={{ 
+              width: '80px', 
+              height: '80px', 
+              objectFit: 'contain',
+              background: 'transparent',
+              padding: '0'
+            }} 
+          />
         </div>
 
         {/* URL Input Section */}
