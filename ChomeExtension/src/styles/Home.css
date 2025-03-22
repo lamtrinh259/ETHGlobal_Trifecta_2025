@@ -1,0 +1,136 @@
+/* Home component styles */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: white;
+  font-size: 1.25rem;
+  padding: 24px;
+}
+
+.home-content {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(600px - 56px); /* Subtract the nav height */
+}
+
+/* Title */
+.title {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 2.25rem;
+  font-weight: bold;
+}
+
+.title-tee {
+  color: white;
+}
+
+.title-shield {
+  background: linear-gradient(to right, #8a9af1, #f178b6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Logo */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+/* URL section */
+.url-section {
+  background-color: #111116;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.url-label {
+  color: #8a9af1;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.url-input {
+  width: 100%;
+  background-color: #0a0a0e;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+
+/* Buttons */
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.button {
+  width: 100%;
+  font-weight: bold;
+  padding: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.analyze-button {
+  background: linear-gradient(to right, #8a9af1, #f178b6);
+  color: white;
+}
+
+.analyze-button:hover {
+  opacity: 0.9;
+}
+
+.save-button {
+  background-color: #1a1f36;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #252b45;
+}
+
+/* Results area */
+.results-container {
+  flex: 1;
+}
+
+.results-textarea {
+  width: 100%;
+  height: 160px;
+  background-color: #111116;
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  resize: none;
+  border: none;
+  outline: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .home-content {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 1.875rem;
+  }
+} 
