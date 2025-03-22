@@ -1,167 +1,234 @@
-.App {
-  text-align: center;
-  width: 350px;
-  height: 500px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #282c34;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
+/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html, body, #root {
+  width: 400px;
+  height: 600px;
+  overflow: hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-  color: #666;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 20px;
-  font-size: calc(10px + 1vmin);
+body {
+  background-color: #0a0a0e;
   color: white;
 }
 
-.favicon {
-  width: 32px;
-  height: 32px;
-  margin: 10px 0;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: white;
+/* App container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 400px;
+  min-width: 400px;
+  background-color: #0a0a0e;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
 }
 
-.url-container {
+/* Navigation */
+.navigation {
   width: 100%;
-  margin: 10px 0 20px;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  max-height: 200px;
-  overflow-y: auto;
+  background-color: #111116;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
-.current-url {
-  font-size: 14px;
-  color: #61dafb;
-  margin: 0 0 5px 0;
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-tab {
+  color: #9ca3af;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nav-tab.active {
+  color: #8a9af1;
+  border-bottom: 2px solid #8a9af1;
+  padding-bottom: 4px;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(600px - 56px); /* Subtract the nav height */
+}
+
+/* Title */
+.title {
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 2.25rem;
   font-weight: bold;
 }
 
-.url-value {
-  font-size: 14px;
-  word-break: break-all;
-  margin: 0;
+.title-tee {
+  color: white;
 }
 
-.button-container {
+.title-shield {
+  background: linear-gradient(to right, #8a9af1, #f178b6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Logo */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  background-color: #111116;
+  padding: 16px;
+  border-radius: 12px;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #f44336;
+}
+
+.logo-text {
+  font-size: 12px;
+  color: white;
+}
+
+/* URL section */
+.url-section {
+  background-color: #111116;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.url-label {
+  color: #8a9af1;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.url-input {
+  width: 100%;
+  background-color: #0a0a0e;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  border: none;
+  outline: none;
+}
+
+/* Buttons */
+.buttons-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  gap: 10px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
-.analyze-button, .save-button {
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+.button {
   width: 100%;
+  font-weight: bold;
+  padding: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .analyze-button {
-  background-color: #61dafb;
-  color: #282c34;
+  background: linear-gradient(to right, #8a9af1, #f178b6);
+  color: white;
+}
+
+.analyze-button:hover {
+  opacity: 0.9;
 }
 
 .save-button {
-  background-color: #98c379;
-  color: #282c34;
+  background-color: #1a1f36;
+  color: white;
 }
 
-.analyze-button:hover, .save-button:hover {
-  filter: brightness(1.1);
+.save-button:hover {
+  background-color: #252b45;
 }
 
-.analyze-button:active, .save-button:active {
-  transform: scale(0.98);
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.App-main {
+/* Results area */
+.results-container {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
+}
+
+.results-textarea {
   width: 100%;
+  height: 160px;
+  background-color: #111116;
+  color: white;
+  padding: 16px;
+  border-radius: 8px;
+  resize: none;
+  border: none;
+  outline: none;
 }
 
-.home-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 15px;
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .main-content {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 1.875rem;
+  }
+
+  .nav-tabs {
+    gap: 16px;
+  }
 }
 
-.home-content h1 {
-  font-size: 24px;
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #61dafb;
+/* Development mode styles */
+@media (min-width: 641px) {
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .app-container {
+    width: 400px;
+    min-width: 400px;
+    height: 600px;
+    margin: 2rem auto;
+  }
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
