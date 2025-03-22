@@ -10,7 +10,7 @@ import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const inter = Inter({ subsets: ["latin"] });
 
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { darkTheme, getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
 
 const queryClient = new QueryClient();
@@ -49,7 +49,7 @@ export default function RootLayout({
         >
           <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
-              <RainbowKitProvider>{children}</RainbowKitProvider>
+              <RainbowKitProvider theme={darkTheme()}>{children}</RainbowKitProvider>
             </QueryClientProvider>
           </WagmiProvider>
         </ThemeProvider>
