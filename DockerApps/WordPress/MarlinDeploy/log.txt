@@ -1,0 +1,20 @@
+[2m2025-03-22T10:31:40.023233Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Starting deployment...
+[2m2025-03-22T10:31:40.200326Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m CP URL for operator: http://13.202.229.168:8080
+[2m2025-03-22T10:31:41.931514Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Total cost: 0.132445 USDC
+[2m2025-03-22T10:31:41.932501Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Total rate: 0.066223 USDC/hour
+[2m2025-03-22T10:31:41.932974Z[0m [32m INFO[0m [2moyster_cvm::args::init_params[0m[2m:[0m digest [3mpath[0m[2m=[0m"docker-compose.yml" [3mshould_attest[0m[2m=[0mtrue [3mshould_encrypt[0m[2m=[0mfalse
+[2m2025-03-22T10:31:41.933031Z[0m [32m INFO[0m [2moyster_cvm::args::init_params[0m[2m:[0m Computed digest [3mdigest[0m[2m=[0m"81b59fa06a32f50c141b3eea1a8193b45c6676e558578f2ee4085bc1df44d87a"
+[2m2025-03-22T10:31:42.360608Z[0m [32m INFO[0m [2moyster_cvm::args::init_params[0m[2m:[0m param [3mpath[0m[2m=[0m"docker-compose.yml" [3mshould_attest[0m[2m=[0mtrue [3mshould_encrypt[0m[2m=[0mfalse
+[2m2025-03-22T10:31:42.497355Z[0m [32m INFO[0m [2moyster_cvm::utils::usdc[0m[2m:[0m Current allowance (0) is less than required amount (132445), approving USDC transfer...
+[2m2025-03-22T10:31:50.977984Z[0m [32m INFO[0m [2moyster_cvm::utils::usdc[0m[2m:[0m USDC approval transaction: 0x67e1edb11909412c994978271e915a3db45acd9e8c557d7ed3784035ecba834b
+[2m2025-03-22T10:32:12.351060Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Job creation transaction: 0xdca33740ae80fc10badda1e3b28893d67476f9db46507db654e290a58e69f1d7
+[2m2025-03-22T10:32:12.466533Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Found JobOpened event
+[2m2025-03-22T10:32:12.466566Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Job created with ID: 0x0000000000000000000000000000000000000000000000000000000000000b02
+[2m2025-03-22T10:32:12.466576Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Waiting for 3 minutes for enclave to start...
+[2m2025-03-22T10:35:12.468920Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Checking for IP address (attempt 1/20)
+[2m2025-03-22T10:35:13.199020Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Response from IP endpoint: {"ip":"43.205.156.115"}
+[2m2025-03-22T10:35:13.199054Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m IP address obtained: 43.205.156.115
+[2m2025-03-22T10:35:13.199063Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Attempting TCP connection to 43.205.156.115:1300 (attempt 1/20)
+[2m2025-03-22T10:35:13.414109Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Checking reachability (attempt 1/20)
+[2m2025-03-22T10:35:13.859781Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Reachability check successful
+[2m2025-03-22T10:35:13.859982Z[0m [32m INFO[0m [2moyster_cvm::commands::deploy[0m[2m:[0m Enclave is ready! IP address: 43.205.156.115
