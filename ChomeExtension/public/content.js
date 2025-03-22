@@ -5,12 +5,22 @@
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'analyze') {
-    // Analyze page content
-    const pageAnalysis = analyzePageContent();
-    sendResponse({ success: true, data: pageAnalysis });
-    
-    // Show a notification on the page
-    showNotification('Page analyzed successfully!');
+    // Check if we need to return HTML content
+    if (message.getHtml) {
+      // Get the full HTML content of the page
+      const htmlContent = document.documentElement.outerHTML;
+      sendResponse({ success: true, html: htmlContent });
+      
+      // Show a notification on the page
+      showNotification('HTML content captured');
+    } else {
+      // Analyze page content
+      const pageAnalysis = analyzePageContent();
+      sendResponse({ success: true, data: pageAnalysis });
+      
+      // Show a notification on the page
+      showNotification('Page analyzed successfully!');
+    }
   }
   
   // Always return true for asynchronous response
