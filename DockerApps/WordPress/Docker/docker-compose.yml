@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  wordpress:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - wordpress_data:/var/www/html
+      - db_data:/var/lib/mysql
+    restart: always
+
+volumes:
+  wordpress_data:
+  db_data:

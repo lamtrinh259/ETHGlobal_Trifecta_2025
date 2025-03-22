@@ -1,0 +1,6 @@
+services:
+  echo-server:
+    image: ebusinessms/tee-shield-wordpress-mysql-demo:latest
+    init: true
+    network_mode: host
+    restart: unless-stopped
