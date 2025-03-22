@@ -21,6 +21,8 @@ export default function TerminalPage() {
   const [privateKey, setPrivateKey] = useState("")
   const [showPrivateKey, setShowPrivateKey] = useState(false)
   const [durationMinutes, setDurationMinutes] = useState("15")
+  const [isCopied, setIsCopied] = useState(false)
+  const outputRef = useRef<HTMLDivElement>(null)
 
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -199,6 +201,19 @@ export default function TerminalPage() {
       setIsExecuting(false)
     }
   }
+
+  const copyOutputToClipboard = () => {
+    navigator.clipboard.writeText(commandResult)
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 2000)
+  }
+
+  // Auto scroll to bottom when new content is added
+  useEffect(() => {
+    if (outputRef.current) {
+      outputRef.current.scrollTop = outputRef.current.scrollHeight
+    }
+  }, [commandResult])
 
   return (
     <div className="bg-black text-cyan-400 min-h-screen p-6 font-mono relative">
@@ -520,15 +535,54 @@ export default function TerminalPage() {
                 </div>
               </div>
 
-              <textarea
-                id="deploy-tee-result"
-                value={commandResult}
-                readOnly
-                className="w-full h-96 bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
-              />
-
-
-              {/* <BashTerminal /> */}
+              <div className="bg-black border border-gray-800 focus-within:border-cyan-700 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between border-b border-cyan-900/50 px-4 py-2">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <span className="text-xs text-gray-400">deployment_output</span>
+                  <button
+                    onClick={copyOutputToClipboard}
+                    className="flex items-center space-x-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-cyan-400 transition-colors"
+                    title="Copy output"
+                  >
+                    {isCopied ? (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                          <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <div 
+                  ref={outputRef}
+                  className="p-4 h-96 overflow-auto font-mono text-sm scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600"
+                >
+                  {commandResult.split('\n').map((line, index) => (
+                    <div key={index} className="flex">
+                      {index === 0 && (
+                        <span className="text-green-500 mr-2">$</span>
+                      )}
+                      <span className="text-cyan-300 whitespace-pre-wrap">{line}</span>
+                      {index === commandResult.split('\n').length - 1 && (
+                        <span className="animate-pulse ml-1">_</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {/* Configuration */}
               <div className="p-6 border-t border-cyan-900/50">

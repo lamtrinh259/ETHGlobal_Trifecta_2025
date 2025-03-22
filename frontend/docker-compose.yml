@@ -1,0 +1,6 @@
+services:
+  echo-server:
+    image: wordpress
+    init: true
+    network_mode: host
+    restart: unless-stopped
