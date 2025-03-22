@@ -22,7 +22,7 @@
 
    **Option 2**: Run the deployment command manually:
    ```
-   source .env && oyster-cvm deploy --wallet-private-key $PRIVATE_KEY --duration-in-minutes 15 --docker-compose docker-compose.yml
+   source .env && oyster-cvm deploy --bandwidth 50 --wallet-private-key $PRIVATE_KEY --duration-in-minutes 120 --docker-compose docker-compose.yml
    ```
 
 > Note: The `.env` file is listed in `.gitignore` to ensure your private key is not committed to the repository.
