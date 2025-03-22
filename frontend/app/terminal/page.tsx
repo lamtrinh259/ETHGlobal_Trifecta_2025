@@ -556,30 +556,40 @@ export default function TerminalPage() {
               </div>
 
 
-              <div className="mt-8 flex justify-end">
-                <div
-                  className="relative"
-                  onMouseEnter={() => setIsDeployHovered(true)}
-                  onMouseLeave={() => setIsDeployHovered(false)}
-                >
+              <div className="mt-4 p-4 border-t border-cyan-900/50">
+                <div className="flex justify-end">
                   <button
                     onClick={handleDeployClick}
                     disabled={isExecuting}
-                    className={`relative px-8 mb-4 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
+                    className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
                       isExecuting 
-                        ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                        : isDeployHovered 
-                          ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
-                          : 'bg-cyan-700 text-white'
+                        ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-cyan-600/30"
                     }`}
                   >
                     {isExecuting ? (
-                      <div className="flex items-center space-x-2">
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <div className="flex items-center justify-center space-x-2">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
-                        <span>Executing...</span>
+                        <span>Deploying...</span>
                       </div>
                     ) : (
                       'Deploy TEE'
@@ -640,69 +650,91 @@ export default function TerminalPage() {
 
               {/* Extract Deployment Values */}
               <div className="mt-4 p-4 border-t border-cyan-900/50">
-                <Button
-                  onClick={async () => {
-                    try {
-                      setIsExtracting(true)
-                      setExtractionError(null)
-                      
-                      const userMessage: ChatMessage = {
-                        role: 'user',
-                        content: "Extract the IP address and the digest from the following text: " +
-                        executeCommandResult +
-                        " Return only a JSON with the values for the ip , digest and jobId, totalCost, totalRate, approvalTransaction. Don’t return comment just the JSON object. Dont thrturn the word ```json or ```, just the plain JSON OBJECT"
-                      }
+                <div className="flex justify-end">
+                  <Button
+                    onClick={async () => {
+                      try {
+                        setIsExtracting(true)
+                        setExtractionError(null)
+                        
+                        const userMessage: ChatMessage = {
+                          role: 'user',
+                          content: "Extract the IP address and the digest from the following text: " +
+                          executeCommandResult +
+                          " Return only a JSON with the values for the ip , digest and jobId, totalCost, totalRate, approvalTransaction. Don't return comment just the JSON object. Dont thrturn the word ```json or ```, just the plain JSON OBJECT"
+                        }
 
-                      console.log('****** userMessage:', userMessage);
+                        console.log('****** userMessage:', userMessage);
 
-                      const response = await fetch('/api/extract-digest', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          messages: [...messages, userMessage],
-                        }),
-                      });                      
-                      
-                      if (!response.ok) {
-                        throw new Error('Failed to extract values from deployment output')
-                      }
-                      
-                      const data = await response.json()
+                        const response = await fetch('/api/extract-digest', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            messages: [...messages, userMessage],
+                          }),
+                        });                      
+                        
+                        if (!response.ok) {
+                          throw new Error('Failed to extract values from deployment output')
+                        }
+                        
+                        const data = await response.json()
 
-                      const extractedData = data.choices[0].message.content;
-                      const jsonData = JSON.parse(extractedData);
-                      
-                      if (!jsonData.ip || !jsonData.digest) {
-                        throw new Error('Could not find IP or digest in the deployment output')
+                        const extractedData = data.choices[0].message.content;
+                        const jsonData = JSON.parse(extractedData);
+                        
+                        if (!jsonData.ip || !jsonData.digest) {
+                          throw new Error('Could not find IP or digest in the deployment output')
+                        }
+                        
+                        setIpAddress(jsonData.ip)
+                        setDigestId(jsonData.digest)
+                        
+                      } catch (error) {
+                        console.error('Error extracting values:', error)
+                        setExtractionError(error instanceof Error ? error.message : 'Failed to extract values')
+                      } finally {
+                        setIsExtracting(false)
                       }
-                      
-                      setIpAddress(jsonData.ip)
-                      setDigestId(jsonData.digest)
-                      
-                    } catch (error) {
-                      console.error('Error extracting values:', error)
-                      setExtractionError(error instanceof Error ? error.message : 'Failed to extract values')
-                    } finally {
-                      setIsExtracting(false)
-                    }
-                  }}
-                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 transition-all duration-300"
-                  disabled={!commandResult || isExtracting}
-                >
-                  {isExtracting ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      <span>Extracting...</span>
-                    </div>
-                  ) : (
-                    'Extract Deployment Values'
-                  )}
-                </Button>
+                    }}
+                    className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
+                      !commandResult || isExtracting
+                        ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-cyan-600/30"
+                    }`}
+                    disabled={!commandResult || isExtracting}
+                  >
+                    {isExtracting ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        <span>Extracting Values...</span>
+                      </div>
+                    ) : (
+                      'Get IP and Digest'
+                    )}
+                  </Button>
+                </div>
 
                 {extractionError && (
                   <div className="mt-2 p-2 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
