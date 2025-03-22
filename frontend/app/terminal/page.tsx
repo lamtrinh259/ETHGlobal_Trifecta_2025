@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button"
 export default function TerminalPage() {
   const [digestId, setDigestId] = useState("")
   const [ipAddress, setIpAddress] = useState("")
+  const [dockerComposePath, setDockerComposePath] = useState("")
   const [deploymentCommand, setDeploymentCommand] = useState(
-    "oyster-cvm deploy --bandwidth 50 --wallet-private-key $PRIV_KEY --duration-in-minutes $DURATION_MINUTES --docker-compose docker-compose.yml"
+    'oyster-cvm deploy --bandwidth 50 --wallet-private-key "$PRIV_KEY" --duration-in-minutes "$DURATION_MINUTES" --docker-compose "$DOCKER_COMPOSE_PATH"'
   )
   const [isDeployHovered, setIsDeployHovered] = useState(false)
   const [commandResult, setCommandResult] = useState("")
@@ -23,6 +24,7 @@ export default function TerminalPage() {
   const [durationMinutes, setDurationMinutes] = useState("15")
   const [isCopied, setIsCopied] = useState(false)
   const outputRef = useRef<HTMLDivElement>(null)
+  const [dockerComposeContent, setDockerComposeContent] = useState("")
 
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -157,22 +159,21 @@ export default function TerminalPage() {
       setIsExecuting(true)
       setCommandResult("Starting deployment process...\n")
 
-      // Create docker-compose.yml file
-      setCommandResult(prev => `${prev}Creating docker-compose.yml...\n`)
-      const createFileResponse = await fetch('/api/create-docker-compose', {
-        method: 'POST',
-      })
-
-      if (!createFileResponse.ok) {
-        throw new Error('Failed to create docker-compose.yml')
+      setCommandResult(prev => `${prev}Verifying docker-compose.yml exists...\n`)
+      
+      // Verify the docker-compose file exists
+      const fileCheckResponse = await fetch('/api/check-docker-compose')
+      if (!fileCheckResponse.ok) {
+        throw new Error('docker-compose.yml file not found in assets directory')
       }
-
-      setCommandResult(prev => `${prev}docker-compose.yml created successfully.\n\nExecuting deployment command...\n`)
+      
+      setCommandResult(prev => `${prev}docker-compose.yml found. Proceeding with deployment...\n\n`)
 
       // Replace variables in the command and ensure it's a single line
       const finalCommand = deploymentCommand
-        .replace('$PRIV_KEY', privateKey)
-        .replace('$DURATION_MINUTES', durationMinutes)
+        .replace('"$PRIV_KEY"', `"${privateKey}"`)
+        .replace('"$DURATION_MINUTES"', `"${durationMinutes}"`)
+        .replace('"$DOCKER_COMPOSE_PATH"', `"${dockerComposePath}"`)
         .replace(/\n/g, ' ') // Remove any newlines
         .trim() // Remove any extra spaces
       
@@ -214,6 +215,43 @@ export default function TerminalPage() {
       outputRef.current.scrollTop = outputRef.current.scrollHeight
     }
   }, [commandResult])
+
+  // Load docker-compose.yml content
+  useEffect(() => {
+    async function loadDockerCompose() {
+      try {
+        const response = await fetch('/api/get-docker-compose')
+        const data = await response.json()
+        if (response.ok) {
+          setDockerComposeContent(data.content)
+        } else {
+          console.error('Failed to load docker-compose.yml:', data.error)
+        }
+      } catch (error) {
+        console.error('Error loading docker-compose.yml:', error)
+      }
+    }
+    loadDockerCompose()
+  }, [])
+
+  // Get the absolute path of docker-compose.yml
+  useEffect(() => {
+    async function getDockerComposePath() {
+      try {
+        const response = await fetch('/api/get-docker-compose-path')
+        const data = await response.json()
+        if (response.ok) {
+          setDockerComposePath(data.path)
+          console.log('Docker compose path:', data.path)
+        } else {
+          console.error('Failed to get docker-compose path:', data.error)
+        }
+      } catch (error) {
+        console.error('Error getting docker-compose path:', error)
+      }
+    }
+    getDockerComposePath()
+  }, [])
 
   return (
     <div className="bg-black text-cyan-400 min-h-screen p-6 font-mono relative">
@@ -412,27 +450,22 @@ export default function TerminalPage() {
               <div className="mt-6 pt-4 border-t border-cyan-900/30">
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-gray-400">docker-compose.yml</span>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(`services:
-  echo-server:
-    image: wordpress
-    init: true
-    network_mode: host
-    restart: unless-stopped`)}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
-                  >
-                    Copy
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-500">
+                      /assets/docker/wordpress/docker-compose.yml
+                    </span>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(dockerComposeContent)}
+                      className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                    >
+                      Copy
+                    </button>
+                  </div>
                 </div>
                 <div className="relative">
                   <textarea
                     readOnly
-                    value={`services:
-  echo-server:
-    image: wordpress
-    init: true
-    network_mode: host
-    restart: unless-stopped`}
+                    value={dockerComposeContent}
                     className="w-full h-48 bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
                   />
                 </div>
@@ -536,6 +569,7 @@ export default function TerminalPage() {
                 </div>
               </div>
 
+              {/* Deployment Output */}
               <div className="bg-black border border-gray-800 focus-within:border-cyan-700 rounded-xl overflow-hidden">
                 <div className="flex items-center justify-between border-b border-cyan-900/50 px-4 py-2">
                   <div className="flex items-center space-x-2">
@@ -584,6 +618,10 @@ export default function TerminalPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Load values */}
+
+
 
               {/* Configuration */}
               <div className="p-6 border-t border-cyan-900/50">

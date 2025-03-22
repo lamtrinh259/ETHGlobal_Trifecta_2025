@@ -30,7 +30,8 @@
     "tailwind-scrollbar": "^4.0.1",
     "tailwindcss-animate": "^1.0.6",
     "viem": "^2.23.14",
-    "wagmi": "^2.14.15"
+    "wagmi": "^2.14.15",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
