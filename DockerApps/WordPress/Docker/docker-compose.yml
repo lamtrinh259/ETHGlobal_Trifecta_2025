@@ -9,18 +9,7 @@ services:
       - wordpress_data:/var/www/html
       - db_data:/var/lib/mysql
     restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "wordpressuser", "-ppassword"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    environment:
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=wordpressuser
-      - MYSQL_PASSWORD=password
 
 volumes:
   wordpress_data:
-    driver: local
   db_data:
-    driver: local
