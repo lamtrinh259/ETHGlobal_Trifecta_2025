@@ -8,7 +8,22 @@ import { useAccount, useBalance, useWriteContract } from "wagmi"
 import BashTerminal from "@/components/bash-terminal"
 import { Button } from "@/components/ui/button"
 
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
+export interface ChatRequest {
+  model: string;
+  messages: ChatMessage[];
+  temperature?: number;
+}
+
 export default function TerminalPage() {
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+
   const [digestId, setDigestId] = useState("")
   const [ipAddress, setIpAddress] = useState("")
   const [dockerComposePath, setDockerComposePath] = useState("")
@@ -17,6 +32,7 @@ export default function TerminalPage() {
   )
   const [isDeployHovered, setIsDeployHovered] = useState(false)
   const [commandResult, setCommandResult] = useState("")
+  const [executeCommandResult, setExecuteCommandResult] = useState("")
   const [isExecuting, setIsExecuting] = useState(false)
   const terminalRef = useRef(null)
   const [privateKey, setPrivateKey] = useState("")
@@ -25,6 +41,8 @@ export default function TerminalPage() {
   const [isCopied, setIsCopied] = useState(false)
   const outputRef = useRef<HTMLDivElement>(null)
   const [dockerComposeContent, setDockerComposeContent] = useState("")
+  const [extractionError, setExtractionError] = useState<string | null>(null)
+  const [isExtracting, setIsExtracting] = useState(false)
 
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -194,6 +212,7 @@ export default function TerminalPage() {
         throw new Error(data.error || 'Failed to execute command')
       }
 
+      setExecuteCommandResult(data.output)
       setCommandResult(prev => `${prev}${data.output}\n\nDeployment completed successfully! ✅`)
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
@@ -619,9 +638,103 @@ export default function TerminalPage() {
                 </div>
               </div>
 
-              {/* Load values */}
+              {/* Extract Deployment Values */}
+              <div className="mt-4 p-4 border-t border-cyan-900/50">
+                <Button
+                  onClick={async () => {
+                    try {
+                      setIsExtracting(true)
+                      setExtractionError(null)
+                      
+                      const userMessage: ChatMessage = {
+                        role: 'user',
+                        content: "Extract the IP address and the digest from the following text: " +
+                        executeCommandResult +
+                        " Return only a JSON with the values for the ip , digest and jobId, totalCost, totalRate, approvalTransaction. Don’t return comment just the JSON object. Dont thrturn the word ```json or ```, just the plain JSON OBJECT"
+                      }
 
+                      console.log('****** userMessage:', userMessage);
 
+                      const response = await fetch('/api/extract-digest', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          messages: [...messages, userMessage],
+                        }),
+                      });                      
+                      
+                      if (!response.ok) {
+                        throw new Error('Failed to extract values from deployment output')
+                      }
+                      
+                      const data = await response.json()
+
+                      const extractedData = data.choices[0].message.content;
+                      const jsonData = JSON.parse(extractedData);
+                      
+                      if (!jsonData.ip || !jsonData.digest) {
+                        throw new Error('Could not find IP or digest in the deployment output')
+                      }
+                      
+                      setIpAddress(jsonData.ip)
+                      setDigestId(jsonData.digest)
+                      
+                    } catch (error) {
+                      console.error('Error extracting values:', error)
+                      setExtractionError(error instanceof Error ? error.message : 'Failed to extract values')
+                    } finally {
+                      setIsExtracting(false)
+                    }
+                  }}
+                  className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 transition-all duration-300"
+                  disabled={!commandResult || isExtracting}
+                >
+                  {isExtracting ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Extracting...</span>
+                    </div>
+                  ) : (
+                    'Extract Deployment Values'
+                  )}
+                </Button>
+
+                {extractionError && (
+                  <div className="mt-2 p-2 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
+                    {extractionError}
+                  </div>
+                )}
+
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-cyan-300 mb-2 text-sm font-medium">
+                      Extracted IP Address
+                    </label>
+                    <input
+                      type="text"
+                      value={ipAddress}
+                      readOnly
+                      className="w-full bg-gray-800 border border-cyan-900/70 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-cyan-300 mb-2 text-sm font-medium">
+                      Extracted Digest ID
+                    </label>
+                    <input
+                      type="text"
+                      value={digestId}
+                      readOnly
+                      className="w-full bg-gray-800 border border-cyan-900/70 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white shadow-sm"
+                    />
+                  </div>
+                </div>
+              </div>
 
               {/* Configuration */}
               <div className="p-6 border-t border-cyan-900/50">

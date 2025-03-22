@@ -1,41 +1,12 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod'
-
-// Input validation schema
-const MessageSchema = z.object({
-  messages: z.array(
-    z.object({
-      content: z.string()
-    })
-  )
-})
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
-    // Validate input
-    const validatedBody = MessageSchema.parse(body);
 
     const bodyToPost = JSON.stringify({
       model: 'meta-llama/Llama-3.1-8B-Instruct',
-      messages: [
-        {
-          role: "user",
-          content: `Analyze the following text: 
-          ${validatedBody.messages[0].content}
-
-        Return only a JSON with the values for:
-        - ip
-        - digest
-        - jobId
-        - totalCost
-        - totalRate
-        - approvalTransaction
-
-        Return the plain JSON object without any markdown formatting or comments.`
-        }
-      ],
+      messages: body.messages,
       temperature: 0.2,
     })
 
@@ -53,8 +24,12 @@ export async function POST(req: Request) {
       }
     );
 
+    console.log('****** response:', response);
+
     const data = await response.json();
-    console.log('Response:', data);
+
+    console.log('****** data:', data);
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('Chat error:', error);
