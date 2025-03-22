@@ -768,6 +768,9 @@ export default function TerminalPage() {
                 </div>
               </div>
 
+              {/* Verify deployment */}
+              
+
               {/* Configuration */}
               <div className="p-6 border-t border-cyan-900/50">
                 <div className="space-y-5">
@@ -858,6 +861,7 @@ export default function TerminalPage() {
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
