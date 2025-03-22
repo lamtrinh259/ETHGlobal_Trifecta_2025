@@ -11,14 +11,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const inter = Inter({ subsets: ["latin"] });
 
 import { darkTheme, getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
+import { arbitrum,mainnet } from "wagmi/chains";
 
 const queryClient = new QueryClient();
 
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "25195dd15a9741bb3dc1f86d8f11cf1d",
-  chains: [mainnet, polygon, optimism, arbitrum, base],
+  chains: [mainnet, arbitrum],
   ssr: true,
 });
 
