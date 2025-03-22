@@ -6,20 +6,24 @@ import { parseEther } from "viem"
 import { useAccount, useBalance, useWriteContract } from "wagmi"
 
 import BashTerminal from "@/components/bash-terminal"
+import { Button } from "@/components/ui/button"
 
 export default function TerminalPage() {
   const [digestId, setDigestId] = useState("")
   const [ipAddress, setIpAddress] = useState("")
   const [deploymentCommand, setDeploymentCommand] = useState(
-    "oyster-cvm deploy\n--wallet-private-key $PRIV_KEY\n--duration-in-minutes 15\n--docker-compose docker-compose.yml"
+    "oyster-cvm deploy\n--wallet-private-key $PRIV_KEY\n--duration-in-minutes $DURATION_MINUTES\n--docker-compose docker-compose.yml"
   )
   const [isDeployHovered, setIsDeployHovered] = useState(false)
   const terminalRef = useRef(null)
+  const [privateKey, setPrivateKey] = useState("")
+  const [showPrivateKey, setShowPrivateKey] = useState(false)
+  const [durationMinutes, setDurationMinutes] = useState("15")
 
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
     address,
-    token: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+    token: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
   })
 
   const { writeContract, isPending } = useWriteContract()
@@ -240,6 +244,135 @@ export default function TerminalPage() {
                   ></div>
                 </div>
               </div>
+
+              {/* Deployer Private Key */}
+              <div className="mt-6 pt-4 border-t border-cyan-900/30">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-400">Deployer Private Key</span>
+                  <button
+                    onClick={() => setShowPrivateKey(!showPrivateKey)}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                    {showPrivateKey ? "Hide" : "Show"}
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPrivateKey ? "text" : "password"}
+                    value={privateKey}
+                    onChange={(e) => setPrivateKey(e.target.value)}
+                    placeholder="Enter your private key"
+                    className="w-full bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  />
+                  {privateKey && (
+                    <button
+                      onClick={() => navigator.clipboard.writeText(privateKey)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-cyan-400 hover:text-cyan-300 transition-colors"
+                      title="Copy private key"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {privateKey && (
+                  <p className="mt-2 text-xs text-amber-400">
+                    ⚠️ Never share your private key. Keep it secure.
+                  </p>
+                )}
+              </div>
+
+              {/* Duration in minutes */}
+              <div className="mt-6 pt-4 border-t border-cyan-900/30">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-400">Duration (minutes)</span>
+                  <span className="text-xs text-cyan-400">
+                    Min: 5
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="5"
+                    value={durationMinutes}
+                    onChange={(e) => {
+                      const value = Math.max(parseInt(e.target.value) || 5, 5)
+                      setDurationMinutes(value.toString())
+                    }}
+                    placeholder="Enter duration in minutes"
+                    className="w-full bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex space-x-2">
+                    <button
+                      onClick={() => setDurationMinutes(prev => (parseInt(prev) + 5).toString())}
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors p-1"
+                      title="Increase by 5 minutes"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setDurationMinutes(prev => Math.max(parseInt(prev) - 5, 5).toString())}
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors p-1"
+                      title="Decrease by 5 minutes"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  Deployment will automatically terminate after the specified duration
+                </p>
+              </div>
+
+              {/* docker-compose.yml */}
+              <div className="mt-6 pt-4 border-t border-cyan-900/30">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-gray-400">docker-compose.yml</span>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(`services:
+  echo-server:
+    image: wordpress
+    init: true
+    network_mode: host
+    restart: unless-stopped`)}
+                    className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
+                    Copy
+                  </button>
+                </div>
+                <div className="relative">
+                  <textarea
+                    readOnly
+                    value={`services:
+  echo-server:
+    image: wordpress
+    init: true
+    network_mode: host
+    restart: unless-stopped`}
+                    className="w-full h-48 bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
+                  />
+                </div>
+                <p className="mt-2 text-xs text-gray-500">
+                  This configuration will be used for deploying your WordPress instance
+                </p>
+              </div>
+
             </div>
           </div>
 
@@ -302,7 +435,30 @@ export default function TerminalPage() {
                 </div>
               </div>
 
-              <BashTerminal />
+
+              <div className="mt-8 flex justify-end">
+                <div
+                  className="relative"
+                  onMouseEnter={() => setIsDeployHovered(true)}
+                  onMouseLeave={() => setIsDeployHovered(false)}
+                >
+                  <button
+                    className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 `}
+                  >
+                    Deploy TEE
+                  </button>
+                </div>
+              </div>
+
+              <textarea
+                id="deploy-tee-result"
+                className="w-full h-48 bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
+              >
+                Deploy TEE
+              </textarea>
+
+
+              {/* <BashTerminal /> */}
 
               {/* Configuration */}
               <div className="p-6 border-t border-cyan-900/50">
