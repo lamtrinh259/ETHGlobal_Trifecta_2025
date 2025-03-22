@@ -2,13 +2,14 @@
 
 /*global chrome*/
 import { useState, useEffect } from "react"
-import { getCurrentTab } from "./chrome-api"
+import { getCurrentTab, sendMessageToContentScript } from "./chrome-api"
 import "./App.css"
 
 function App() {
   const [url, setUrl] = useState("https://www.google.com/")
   const [analysisResult, setAnalysisResult] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
 
   useEffect(() => {
     async function fetchTabInfo() {
@@ -29,22 +30,43 @@ function App() {
 
   const handleAnalyze = async () => {
     try {
-      const tab = await getCurrentTab()
-      if (tab) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          { action: 'analyze' }
-        )
-      }
+      setIsAnalyzing(true)
+      setAnalysisResult("Reading HTML content...")
       
-      setAnalysisResult(
-        "Analyzing URL: " +
-          url +
-          "\n\nHash: 0x7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069\nStatus: Verified ✓"
-      )
+      const tab = await getCurrentTab()
+      if (!tab) {
+        setAnalysisResult("Error: Could not get the current tab.")
+        setIsAnalyzing(false)
+        return
+      }
+
+      // Make sure we can't access restricted URLs
+      if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://') || tab.url.startsWith('about:')) {
+        setAnalysisResult(`Cannot access HTML content on restricted pages like ${tab.url}. Try a regular website instead.`)
+        setIsAnalyzing(false)
+        return
+      }
+
+      // Execute script to get the HTML content directly
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        function: () => {
+          return document.documentElement.outerHTML
+        }
+      }, (results) => {
+        if (chrome.runtime.lastError) {
+          setAnalysisResult(`Error: ${chrome.runtime.lastError.message}`)
+        } else if (results && results[0] && results[0].result) {
+          setAnalysisResult(results[0].result)
+        } else {
+          setAnalysisResult("Could not retrieve HTML content.")
+        }
+        setIsAnalyzing(false)
+      })
     } catch (error) {
       console.error('Error analyzing page:', error)
       setAnalysisResult("Error analyzing page: " + error.message)
+      setIsAnalyzing(false)
     }
   }
 
@@ -137,8 +159,12 @@ function App() {
 
         {/* Buttons */}
         <div className="buttons-container">
-          <button onClick={handleAnalyze} className="button analyze-button">
-            Analyze Page
+          <button 
+            onClick={handleAnalyze} 
+            className="button analyze-button"
+            disabled={isAnalyzing}
+          >
+            {isAnalyzing ? "Analyzing..." : "Analyze Page"}
           </button>
 
           <button onClick={handleSave} className="button save-button">
@@ -153,6 +179,12 @@ function App() {
             readOnly
             className="results-textarea"
             placeholder="Analysis results will appear here..."
+            style={{ 
+              fontFamily: 'monospace',
+              whiteSpace: 'pre',
+              overflowWrap: 'normal',
+              overflowX: 'scroll'
+            }}
           />
         </div>
       </main>
