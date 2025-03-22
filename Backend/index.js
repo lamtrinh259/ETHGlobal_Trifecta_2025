@@ -25,6 +25,39 @@ app.get("/getValue", async (req, res) => {
   }
 });
 
+app.get("/getAttestation", async (req, res) => {
+  try {
+    const ip = req.query.ip;
+
+    if (!ip || typeof ip !== "string") {
+      return res.status(400).json({ error: "Missing or invalid 'ip' query param" });
+    }
+
+    const attestation_utility_url = `http://${ip}:1300/attestation/raw`;
+
+    const attestationRes = await fetch("https://attestation_proxy_verifier.justfortesting.me/v1/enclave", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        attestation_utility_url,
+        verifier_ip: "http://13.201.207.60:1400"
+      }),
+    });
+
+    const attestationData = await attestationRes.json();
+    const pcr2 = attestationData?.parsed_attestation?.pcrs?.[2];
+
+    if (typeof pcr2 !== "string") {
+      return res.status(500).json({ error: "Invalid PCR2 value from attestation" });
+    }
+
+    res.json({ pcr2 });
+  } catch (err) {
+    console.error("attestation error:", err);
+    res.status(500).json({ error: "Error fetching attestation" });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`listening on port http://localhost:${port}`);
