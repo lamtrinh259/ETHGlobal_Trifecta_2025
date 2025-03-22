@@ -407,6 +407,7 @@ export default function TerminalPage() {
                 </p>
               </div>
 
+
               {/* docker-compose.yml */}
               <div className="mt-6 pt-4 border-t border-cyan-900/30">
                 <div className="flex justify-between items-center mb-3">
