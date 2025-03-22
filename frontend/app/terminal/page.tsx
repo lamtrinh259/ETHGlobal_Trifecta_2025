@@ -12,9 +12,11 @@ export default function TerminalPage() {
   const [digestId, setDigestId] = useState("")
   const [ipAddress, setIpAddress] = useState("")
   const [deploymentCommand, setDeploymentCommand] = useState(
-    "oyster-cvm deploy\n--wallet-private-key $PRIV_KEY\n--duration-in-minutes $DURATION_MINUTES\n--docker-compose docker-compose.yml"
+    "oyster-cvm deploy --bandwidth 50 --wallet-private-key $PRIV_KEY --duration-in-minutes $DURATION_MINUTES --docker-compose docker-compose.yml"
   )
   const [isDeployHovered, setIsDeployHovered] = useState(false)
+  const [commandResult, setCommandResult] = useState("")
+  const [isExecuting, setIsExecuting] = useState(false)
   const terminalRef = useRef(null)
   const [privateKey, setPrivateKey] = useState("")
   const [showPrivateKey, setShowPrivateKey] = useState(false)
@@ -145,6 +147,56 @@ export default function TerminalPage() {
   const focusTerminal = () => {
     if (terminalRef.current) {
       terminalRef.current.focus()
+    }
+  }
+
+  const handleDeployClick = async () => {
+    try {
+      setIsExecuting(true)
+      setCommandResult("Starting deployment process...\n")
+
+      // Create docker-compose.yml file
+      setCommandResult(prev => `${prev}Creating docker-compose.yml...\n`)
+      const createFileResponse = await fetch('/api/create-docker-compose', {
+        method: 'POST',
+      })
+
+      if (!createFileResponse.ok) {
+        throw new Error('Failed to create docker-compose.yml')
+      }
+
+      setCommandResult(prev => `${prev}docker-compose.yml created successfully.\n\nExecuting deployment command...\n`)
+
+      // Replace variables in the command and ensure it's a single line
+      const finalCommand = deploymentCommand
+        .replace('$PRIV_KEY', privateKey)
+        .replace('$DURATION_MINUTES', durationMinutes)
+        .replace(/\n/g, ' ') // Remove any newlines
+        .trim() // Remove any extra spaces
+      
+      setCommandResult(prev => `${prev}\nExecuting command: ${deploymentCommand}\n\n`)
+
+      // Execute the command
+      const response = await fetch('/api/execute-command', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ command: finalCommand })
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to execute command')
+      }
+
+      setCommandResult(prev => `${prev}${data.output}\n\nDeployment completed successfully! ✅`)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+      setCommandResult(prev => `${prev}\nError during deployment: ${errorMessage} ❌`)
+    } finally {
+      setIsExecuting(false)
     }
   }
 
@@ -443,19 +495,37 @@ export default function TerminalPage() {
                   onMouseLeave={() => setIsDeployHovered(false)}
                 >
                   <button
-                    className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 `}
+                    onClick={handleDeployClick}
+                    disabled={isExecuting}
+                    className={`relative px-8 mb-4 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
+                      isExecuting 
+                        ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                        : isDeployHovered 
+                          ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white' 
+                          : 'bg-cyan-700 text-white'
+                    }`}
                   >
-                    Deploy TEE
+                    {isExecuting ? (
+                      <div className="flex items-center space-x-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        <span>Executing...</span>
+                      </div>
+                    ) : (
+                      'Deploy TEE'
+                    )}
                   </button>
                 </div>
               </div>
 
               <textarea
                 id="deploy-tee-result"
-                className="w-full h-48 bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
-              >
-                Deploy TEE
-              </textarea>
+                value={commandResult}
+                readOnly
+                className="w-full h-96 bg-gray-800 rounded-xl p-3 border border-gray-700 font-mono text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none"
+              />
 
 
               {/* <BashTerminal /> */}
