@@ -1,17 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertCircle, CheckCircle, Download, ExternalLink } from "lucide-react";
+import { AlertCircle, Download, Shield, Settings, Code, Server, CheckCircle, Lock, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useEffect, useRef } from "react";
 
-// BeamsBackground component from the second file
+// BeamsBackground component (reused from examples page)
 function BeamsBackground({ intensity = "medium" }) {
   const canvasRef = useRef(null);
-  const beamsRef:any= useRef([]);
+  const beamsRef:any = useRef([]);
   const animationFrameRef = useRef(0);
   const MINIMUM_BEAMS = 20;
 
@@ -173,54 +173,67 @@ function BeamsBackground({ intensity = "medium" }) {
     </div>
   );
 }
-function ExampleSite({
-  title,
-  description,
-  url,
-  isMalicious,
-  delay = 0,
-}:any) {
-  const handleClick = (e:any) => {
-    e.preventDefault();
-    window.open(url, '_blank', 'noopener,noreferrer');
+
+// Installation Step component
+function InstallationStep({ number, title, description, icon, delay = 0 }:any) {
+  const fadeVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        delay: 0.3 + delay,
+        ease: [0.25, 0.4, 0.25, 1],
+      },
+    },
   };
 
-  return (
+  const Icon = icon;
 
-      <Card onClick={handleClick} className={`p-6 h-full rounded-xl cursor-pointer z-40 border-2 ${
-        isMalicious ? "border-red-500/30 bg-red-950/10" : "border-green-500/30 bg-green-950/10"
-      } transition-all duration-300 group relative`}>
-        
-        <div className="flex items-start gap-4 relative z-10">
-          <div className={`p-3 rounded-lg ${isMalicious ? "bg-red-500/10 text-red-400" : "bg-green-500/10 text-green-400"}`}>
-            {isMalicious ? <AlertCircle size={24} /> : <CheckCircle size={24} />}
-          </div>
-          
-          <div className="flex-1">
-            <h3 className="text-xl font-semibold text-white/90 mb-2 flex items-center gap-2">
-              {title}
-              <span className={`text-xs px-2 py-0.5 rounded-full ${isMalicious ? "bg-red-500/20 text-red-300" : "bg-green-500/20 text-green-300"}`}>
-                {isMalicious ? "Compromised" : "Secure"}
-              </span>
-            </h3>
-            
-            <p className="text-white/60 text-sm mb-4">{description}</p>
-            
-          
-          </div>
-        </div>
-        
-        {/* Move the decorative element below content and ensure it doesn't block interactions */}
-        {/* <div 
-          className={`absolute top-0 right-0 w-20 h-20 -translate-y-10 translate-x-10 rounded-full blur-2xl z-0 ${
-            isMalicious ? "bg-red-500/20" : "bg-green-500/20"
-          }`} 
-        /> */}
-      </Card>
- 
+  return (
+    <motion.div
+      variants={fadeVariants}
+      initial="hidden"
+      animate="visible"
+      className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 relative overflow-hidden group"
+    >
+      <div className="absolute -right-4 -top-4 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="bg-indigo-500/10 text-indigo-400 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+        <Icon size={24} />
+      </div>
+      <div className="absolute top-6 right-6 flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-300 text-sm font-semibold">
+        {number}
+      </div>
+      <h3 className="text-white/90 font-medium text-lg mb-2">{title}</h3>
+      <p className="text-white/60 text-sm">{description}</p>
+    </motion.div>
   );
 }
-export default function ExamplesPage() {
+
+
+function WorkflowStep({ number, title, description, icon }:any) {
+  const Icon = icon;
+  
+  return (
+    <div className="flex items-start gap-4 group">
+      <div className="relative">
+        <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 z-10 relative">
+          <Icon size={20} />
+        </div>
+        {number < 5 && (
+          <div className="absolute top-10 bottom-0 left-1/2 w-0.5 bg-blue-500/20 -translate-x-1/2 group-hover:bg-blue-500/30 transition-colors" />
+        )}
+      </div>
+      <div className="flex-1 pt-1">
+        <h3 className="text-white/90 font-medium mb-1">{title}</h3>
+        <p className="text-white/60 text-sm mb-6">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+export default function ExtensionPage() {
   const fadeVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: (i:any) => ({
@@ -232,6 +245,17 @@ export default function ExamplesPage() {
         ease: [0.25, 0.4, 0.25, 1],
       },
     }),
+  };
+
+  const downloadExtension = () => {
+    console.log("Extension download initiated");
+    // In a real implementation, you would use something like:
+    // const link = document.createElement('a');
+    // link.href = '/path-to-build.zip';
+    // link.download = 'tee-shield-extension.zip';
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
   };
 
   return (
@@ -261,9 +285,9 @@ export default function ExamplesPage() {
           className="mb-2"
         >
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
             <span className="text-sm text-white/70 tracking-wide">
-              Extension Testing
+              Extension
             </span>
           </div>
         </motion.div>
@@ -273,9 +297,9 @@ export default function ExamplesPage() {
           variants={fadeVariants}
           initial="hidden"
           animate="visible"
-          className="text-2xl md:text-6xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400"
+          className="text-2xl md:text-6xl font-bold mb-1 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400"
         >
-          Test TEE Sheild
+          TEE Shield Extension
         </motion.h1>
 
         <motion.p
@@ -283,9 +307,10 @@ export default function ExamplesPage() {
           variants={fadeVariants}
           initial="hidden"
           animate="visible"
-          className="text-lg text-white/60 max-w-2xl mb-8"
+          className="text-lg text-white/60 max-w-3xl mb-6"
         >
-          Experience how our extension works by visiting these test sites. See real-time detection of compromised dApp frontends and explore the secure experience.
+          Protect yourself from compromised dApp frontends with our Chrome extension. 
+          Verify the integrity of Web3 applications and browse with confidence.
         </motion.p>
 
         <motion.div
@@ -293,66 +318,118 @@ export default function ExamplesPage() {
           variants={fadeVariants}
           initial="hidden"
           animate="visible"
+          className="flex flex-col md:flex-row gap-4 mb-12"
         >
-          <Alert className="mb-8 border-blue-500/30 bg-blue-900/20 backdrop-blur-md">
-            <Download className="h-5 w-5 text-blue-300" />
-            <AlertTitle className="text-blue-300">Haven't installed the extension yet?</AlertTitle>
-            <AlertDescription className="text-blue-200/70">
-              <Link href="/extension" className="underline hover:text-blue-300">
-                Navigate to /extension
-              </Link>{" "}
-              to download and install our protection before testing.
-            </AlertDescription>
-          </Alert>
+          <Button 
+            onClick={downloadExtension}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-6 text-lg rounded-xl flex items-center gap-2 shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all duration-300"
+          >
+            <Download className="h-5 w-5" />
+            Download Extension
+          </Button>
+          
+          <Link href="/examples">
+            <Button variant="outline" className="px-8 py-6 text-lg rounded-xl border-white/20 text-white/80 hover:bg-white/5 hover:border-white/30 transition-all duration-300">
+              View Demo
+            </Button>
+          </Link>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 mt-12">
-          <ExampleSite
-            title="Secure Safe Global App"
-            description="This is a legitimate dApp with verified frontend integrity. Our extension will confirm the site is secure and allow normal interaction."
-            url="http://3.7.119.251:3000"
-            isMalicious={false}
-            delay={0.4}
-          />
-          
-          <ExampleSite
-            title="Compromised Safe Global App"
-            description="This simulates a compromised frontend. Our extension will detect the tampering and alert you before any interaction can occur."
-            url="https://eth-global-trifecta-2025-m5uz.vercel.app"
-            isMalicious={true}
-            delay={0.4}
-          />
-        </div>
 
+        {/* Installation Instructions */}
+        <motion.div
+          custom={6}
+          variants={fadeVariants}
+          initial="hidden"
+          animate="visible"
+          className="mb-16"
+        >
+          <h2 className="text-2xl font-semibold mb-8 text-white/90">Installation Instructions</h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <InstallationStep
+              number="1"
+              title="Download Extension"
+              description="Click the download button above to get the extension build folder as a ZIP file."
+              icon={Download}
+              delay={0}
+            />
+            
+            <InstallationStep
+              number="2"
+              title="Open Extensions Page"
+              description="Open Chrome and navigate to chrome://extensions/ in your browser."
+              icon={Settings}
+              delay={0.1}
+            />
+            
+            <InstallationStep
+              number="3"
+              title="Enable Developer Mode"
+              description="Toggle 'Developer mode' in the top-right corner of the extensions page."
+              icon={Code}
+              delay={0.2}
+            />
+            
+            <InstallationStep
+              number="4"
+              title="Load Extension"
+              description="Click 'Load unpacked' and select the build folder from the downloaded ZIP."
+              icon={CheckCircle}
+              delay={0.3}
+            />
+          </div>
+        </motion.div>
+        {/* How It Works */}
         <motion.div
           custom={5}
           variants={fadeVariants}
           initial="hidden"
           animate="visible"
-          className="mt-16 text-center"
+          className="mb-16"
         >
-          <h2 className="text-xl md:text-2xl font-medium mb-6 text-white/80">How Does The Protection Work?</h2>
+          <h2 className="text-2xl font-semibold mb-8 text-white/90">How TEE Shield Works</h2>
           
-          <div className="max-w-3xl mx-auto grid md:grid-cols-3 gap-6 text-white/60">
-            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
-              <div className="bg-blue-500/10 text-blue-400 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">1</div>
-              <h3 className="text-white/90 font-medium mb-2">Hash Verification</h3>
-              <p className="text-sm">Smart contracts store cryptographic hashes of legitimate frontend code.</p>
-            </div>
+          <div className="relative ">
+            <WorkflowStep 
+              number={1} 
+              title="Developer Hash Commitment" 
+              description="The developers of the dApp commit the hash of the frontend into a public verified smart contract on-chain through our dashboard."
+              icon={Code}
+            />
             
-            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/5">
-              <div className="bg-indigo-500/10 text-indigo-400 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">2</div>
-              <h3 className="text-white/90 font-medium mb-2">Real-time Checks</h3>
-              <p className="text-sm">Our extension compares loaded website code against on-chain verification.</p>
-            </div>
+            <WorkflowStep 
+              number={2} 
+              title="User Protection" 
+              description="End users install the Google Chrome extension to verify the integrity of Web3 frontends."
+              icon={Shield}
+            />
             
-            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/5">
-              <div className="bg-purple-500/10 text-purple-400 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">3</div>
-              <h3 className="text-white/90 font-medium mb-2">Instant Protection</h3>
-              <p className="text-sm">Receive immediate alerts before any interaction with compromised sites.</p>
-            </div>
+            <WorkflowStep 
+              number={3} 
+              title="Trusted Execution Environment" 
+              description="User visits the dApp (e.g. Safe Global) front-end site running inside a TEE for additional security."
+              icon={Lock}
+            />
+            
+            <WorkflowStep 
+              number={4} 
+              title="Continuous Verification" 
+              description="The Chrome extension periodically fetches the verified hash from the smart contract and compares it with the current frontend."
+              icon={Server}
+            />
+            
+            <WorkflowStep 
+              number={5} 
+              title="User Alerts" 
+              description="If the hashes match, the site is confirmed safe. If they don't match, the extension alerts the user that the frontend has been tampered with."
+              icon={AlertCircle}
+            />
           </div>
         </motion.div>
+
+
+     
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ export function MainNav({ items }: MainNavProps) {
     },
     { 
       name: 'Extension', 
-      url: '#', 
+      url: '/extension', 
       icon: <User size={18} strokeWidth={2.5} /> 
     },
     { 
