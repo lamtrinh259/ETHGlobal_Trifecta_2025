@@ -26,7 +26,7 @@ export default function TerminalPage() {
   const [ipAddress, setIpAddress] = useState("")
   const [dockerComposePath, setDockerComposePath] = useState("")
   const [deploymentCommand, setDeploymentCommand] = useState(
-    'oyster-cvm deploy --bandwidth 50 --wallet-private-key "$PRIV_KEY" --duration-in-minutes "$DURATION_MINUTES" --docker-compose "$DOCKER_COMPOSE_PATH"'
+    'oyster-cvm deploy --bandwidth 50 --wallet-private-key "$PRIV_KEY" --duration-in-minutes "$DURATION_MINUTES" --docker-compose "$DOCKER_COMPOSE_PATH" --instance-type "c6g.xlarge"'
   )
   const [isDeployHovered, setIsDeployHovered] = useState(false)
   const [commandResult, setCommandResult] = useState("")

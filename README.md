@@ -2,7 +2,7 @@
 # ETHGlobal_Trifecta_2025_TEE_track
 
 # TEE Shield
-Your voice, your choice, your DAO.
+Protecting your front-end integrity, one dapp at a time!
 
 ## Summary
 A decentralized frontend verification system that protects Web3 users from frontend tampering. By leveraging smart contracts, TEEs, and a browser extension, it ensures that users always interact with the authentic version of a dApp.
@@ -26,7 +26,7 @@ Some thoughts for how the whole project can be built out further:
 - Implement a function to extract the value of the digest from the Enclave IP's attestation. It's too time-consuming and complex to be done in a weekend hackathon.
 - Upgrade and add more features into the Chrome extension
 
-## Deployed contract (all verified)
+## Deployed contracts (all verified)
 ### Arbitrum One mainnet  (chainID: 42161)
 | Contract |                           Contract address |
 | Front-end integrity |  |
@@ -36,33 +36,24 @@ Old: https://arbitrum.blockscout.com/address/0x3b53eb6FCc0b0a618db98F05BB4007aFc
 
 ### Arbitrum Sepolia testnet (chainID: 421614)
 | Contract    |                           Contract address |
-| Front-end integrity |  |
+| Front-end integrity | 0xE0b82507493e0e625f2659608142f1a8F11A31F1 |
+
 The verified smart contract on Arbitrum Sepolia testnet is:
+https://testnet.routescan.io/address/0xE0b82507493e0e625f2659608142f1a8F11A31F1/contract/421614/code
 
-
-## How to run locally
+## How to run the entire project (locally)
 Visit the respective README.md inside each folder to get the precise instructions.
-Users would need to install the Chrome Extension by following these steps:
--
+For the Chrome extension, user can download it by following the instructions on the Chrome extension page.
 
-For frontend, go to the "FrontendTestSites" folder and run these commands:
-1.
-
-For backend, go to the "Backend" folder and run these commands:
-1.
-
-### Demo movie
+For dashboard/landing page, go to the "frontend" folder and run these commands:
+```
+1. npm install --legacy-peer-deps
+2. npm run dev
+```
+To deploy some front-end site to Marlin TEE, you would need to have some USDC on Arbitrum One.
 
 
-### Demo site
-
-
-
-
-
-
-
-## Steps for running the Backend & Serverless together
+### Steps for running the Backend & Serverless together
 
 ### Run the Backend locally
 In the `Backend` folder, you will find a node backend, you just enter to the folder with your console, and run
@@ -78,7 +69,7 @@ ngrok http 3000
 ```
 
 This URL ngrok gives you, you need to replace in `Serverless/DigestGetter.js`
-on the `baseUrl` value 
+on the `baseUrl` value
 
 ### Deploy the function
 For test it on Arbitrum sepolia, go to the contract
@@ -98,7 +89,7 @@ copy the encoded value, and you can use it on the url
 
 curl 3PAEUMPQX3RDYNVWAI3FQZCCHVQVC2HSPD45EFX4MYJUCS5UCFRA.oyster.run -d '{"host": "43.205.156.115"}' -v
 
-you replace the ecoded value with your own one, and in the host, you put the ip provided by the frontend. 
+you replace the ecoded value with your own one, and in the host, you put the ip provided by the frontend.
 This function compares the pcr2 value read from the ip page, and the one stored in the contract.
 
 ### Local test
@@ -120,3 +111,9 @@ curl http://0:8090/ -v -d '{"host": "13.201.207.60"}'
 ```
 
 you must change here the ip host for the one you need to compare.
+
+
+## Demo movie
+
+
+## Demo site
