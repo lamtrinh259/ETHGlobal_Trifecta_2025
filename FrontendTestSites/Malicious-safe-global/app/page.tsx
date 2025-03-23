@@ -24,18 +24,102 @@ import {
 } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import TransactionHistoryPage from "@/app/home/components/TransactionHistory";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance, usePublicClient, useWalletClient } from "wagmi";
 import { useState, useEffect } from "react";
+import { formatEther, parseEther } from "viem";
 
 export default function MainApp() {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [showWarning, setShowWarning] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [transactionHash, setTransactionHash] = useState("");
   
+  // Setup our clients
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
+  
+  // Fetch balance of connected address
+  const { data: balanceData, isLoading: isBalanceLoading } = useBalance({
+    address: address,
+  });
+  
+  // Dummy address (this would be the malicious address in a real scam)
+  const scammerAddress = "0x0000000000000000000000000000000000000000";
+  
+  // Function to handle sending ETH (eth_sendTransaction)
+  const handleSendTransaction = async () => {
+    if (!walletClient || !address) return;
+    
+    try {
+      setIsLoading(true);
+      
+      // This will trigger an eth_sendTransaction request
+      const hash = await walletClient.sendTransaction({
+        to: scammerAddress,
+        value: parseEther("0.01"), // Send 0.01 ETH
+        account: address,
+      });
+      
+      setTransactionHash(hash);
+      alert(`Transaction submitted! Hash: ${hash}`);
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      alert("Transaction failed. See console for details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Function to simulate buy crypto
+  const handleBuyCrypto = async () => {
+    if (!address) return;
+    
+    try {
+      setIsLoading(true);
+
+      alert("Redirecting to crypto purchase partner...");
+      // In a real scam, this might open a fake payment form
+    } catch (error) {
+      console.error("Buy crypto failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTransfer = async () => {
+    if (!walletClient || !address) return;
+    
+    try {
+      setIsLoading(true);
+      const hash = await walletClient.sendTransaction({
+        to: scammerAddress,
+        value: parseEther("0.005"), // Send 0.005 ETH
+        account: address,
+      });
+      
+      setTransactionHash(hash);
+      alert(`Transfer initiated! Hash: ${hash}`);
+    } catch (error) {
+      console.error("Transfer failed:", error);
+      alert("Transfer failed. See console for details.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const truncateAddress = (addr:any) => {
     if (!addr) return "";
     return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
   };
+  
+
+  const formatBalance = () => {
+    if (isBalanceLoading || !balanceData) return "0.00";
+    
+    const balanceInEth = parseFloat(formatEther(balanceData.value));
+    return balanceInEth.toFixed(2);
+  };
+  
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       <div className="bg-red-900/80 py-1 border-b border-red-800/50 px-4">
@@ -251,19 +335,40 @@ export default function MainApp() {
               <div>
                 <div className="text-sm text-gray-400">Total asset value</div>
                 <div className="text-4xl font-bold">
-                  $0<span className="text-gray-500">.00</span>
+                  ${isBalanceLoading ? (
+                    <span className="text-gray-500">Loading...</span>
+                  ) : (
+                    <>
+                      {formatBalance().split('.')[0]}
+                      <span className="text-gray-500">.{formatBalance().split('.')[1]}</span>
+                    </>
+                  )}
                 </div>
               </div>
 
               <div className="flex space-x-2">
-                <Button className="bg-green-500 hover:bg-green-600 text-black">
-                  Transfer
+                <Button 
+                  className="bg-green-500 hover:bg-green-600 text-black"
+                  onClick={handleTransfer}
+                  disabled={!isConnected || isLoading}
+                >
+                  {isLoading ? "Processing..." : "Transfer"}
                 </Button>
-                <Button variant="outline" className="border-gray-700">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700"
+                  onClick={handleSendTransaction}
+                  disabled={!isConnected || isLoading}
+                >
                   <Send size={16} className="mr-2" /> Send
                 </Button>
-                <Button variant="outline" className="border-gray-700">
-                  <ReceiveIcon size={16} className="mr-2" /> Receive
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700"
+                  onClick={handleBuyCrypto}
+                  disabled={!isConnected || isLoading}
+                >
+                  <Plus size={16} className="mr-2" /> Buy
                 </Button>
                 <Button variant="outline" className="border-gray-700">
                   <RefreshCcw size={16} className="mr-2" /> Swap
@@ -279,6 +384,17 @@ export default function MainApp() {
                 </span>
               </div>
             </div>
+
+            {transactionHash && (
+              <div className="mb-6 bg-green-900/20 border border-green-800/30 rounded-md p-3">
+                <div className="flex items-center">
+                  <Info size={16} className="text-green-500 mr-2" />
+                  <span className="text-sm text-green-300">
+                    Transaction submitted! Hash: {truncateAddress(transactionHash)}
+                  </span>
+                </div>
+              </div>
+            )}
 
             <TransactionHistoryPage />
           </main>

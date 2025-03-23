@@ -1,8 +1,7 @@
 /* HashComparison.css - Dark Theme */
 .hash-comparison-container {
-    width: 100%;
-    max-width: 500px;
-    min-height:700px;
+    width: 400px;
+    height: 600px;
     padding: 15px;
     background-color: #121212;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
@@ -16,19 +15,19 @@
   
   .hash-comparison-container.matching {
     background-color: #0c2618;
-    border: 2px solid #2c8c54;
+
     box-shadow: 0 0 15px rgba(44, 140, 84, 0.3);
   }
   
   .hash-comparison-container.mismatch {
     background-color: #2a0a0a;
-    border: 2px solid #c93838;
+
     box-shadow: 0 0 15px rgba(201, 56, 56, 0.3);
   }
   
   .hash-comparison-container.pending {
     background-color: #121a29;
-    border: 2px solid #2a4365;
+
     box-shadow: 0 0 15px rgba(42, 67, 101, 0.3);
   }
   
@@ -311,8 +310,10 @@
   
   /* Warning Buttons */
   .warning-buttons {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+   gap:2rem;
     width: 100%;
   }
   
