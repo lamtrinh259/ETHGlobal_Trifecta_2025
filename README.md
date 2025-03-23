@@ -11,6 +11,8 @@ A decentralized frontend verification system that protects Web3 users from front
 In Web3, dApps rely on frontends to interact with users, but these frontends are often hosted on centralized platforms like cloud servers or IPFS gateways. This creates a major security risk: malicious actors or even service providers can tamper with the frontend, inserting malicious code to deceive users (e.g., phishing, incorrect contract interactions, or fund redirection). Users currently have no trustless way to verify if they are interacting with the authentic frontend of a dApp.
 
 ## Flow of app
+The diagram of the flow of different components: https://app.excalidraw.com/l/2Vdv2fRtWEm/85yNRoyIpL6
+![alt text](image-1.png)
 The flow of the app will be like following:
 - The developers of the dapp commits the hash of the dapp into a public verified smart contract on-chain through our dashboard
 - End user installs the Google Chrome extension in order to assist the user with verifying the integrity of the front-end sit
@@ -114,6 +116,7 @@ you must change here the ip host for the one you need to compare.
 
 
 ## Demo movie
-
+https://youtu.be/xszZWFr7aDw
 
 ## Demo site
+https://eth-global-trifecta-2025-ml47.vercel.app/
