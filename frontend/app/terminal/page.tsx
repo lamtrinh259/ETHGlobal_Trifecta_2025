@@ -2,28 +2,26 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { parseEther } from "viem"
+import { CheckCircle2 } from "lucide-react"
+import { arbitrumSepolia } from "viem/chains"
 import { useAccount, useBalance, useWriteContract } from "wagmi"
 
-import BashTerminal from "@/components/bash-terminal"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 
 export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
+  role: "user" | "assistant" | "system"
+  content: string
 }
 
 export interface ChatRequest {
-  model: string;
-  messages: ChatMessage[];
-  temperature?: number;
+  model: string
+  messages: ChatMessage[]
+  temperature?: number
 }
 
 export default function TerminalPage() {
-
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [digestId, setDigestId] = useState("")
   const [ipAddress, setIpAddress] = useState("")
   const [dockerComposePath, setDockerComposePath] = useState("")
@@ -49,7 +47,10 @@ export default function TerminalPage() {
   const [pcr1, setPcr1] = useState("")
   const [pcr2, setPcr2] = useState("")
   const [isPcrExtracting, setIsPcrExtracting] = useState(false)
-  const [pcrExtractionError, setPcrExtractionError] = useState<string | null>(null)
+  const [pcrExtractionError, setPcrExtractionError] = useState<string | null>(
+    null
+  )
+  const [transactionHash, setTransactionHash] = useState<string | null>(null)
 
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -57,91 +58,109 @@ export default function TerminalPage() {
     token: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
   })
 
-  const { writeContract, isPending } = useWriteContract()
+  const {
+    writeContract,
+    isPending,
+    isError,
+    error,
+    data: hash,
+  } = useWriteContract()
+
+  // Watch for transaction hash changes to update UI
+  useEffect(() => {
+    if (hash) {
+      setTransactionHash(hash)
+    }
+  }, [hash])
 
   const handleSubmit = () => {
     if (digestId && ipAddress) {
-      writeContract({
-        address: "0x3b53eb6FCc0b0a618db98F05BB4007aFcDbde94d",
-        abi: [
-          { inputs: [], stateMutability: "nonpayable", type: "constructor" },
-          {
-            inputs: [
-              { internalType: "address", name: "owner", type: "address" },
-            ],
-            name: "OwnableInvalidOwner",
-            type: "error",
-          },
-          {
-            inputs: [
-              { internalType: "address", name: "account", type: "address" },
-            ],
-            name: "OwnableUnauthorizedAccount",
-            type: "error",
-          },
-          {
-            anonymous: false,
-            inputs: [
-              {
-                indexed: true,
-                internalType: "address",
-                name: "previousOwner",
-                type: "address",
-              },
-              {
-                indexed: true,
-                internalType: "address",
-                name: "newOwner",
-                type: "address",
-              },
-            ],
-            name: "OwnershipTransferred",
-            type: "event",
-          },
-          {
-            inputs: [{ internalType: "string", name: "key", type: "string" }],
-            name: "get",
-            outputs: [{ internalType: "string", name: "", type: "string" }],
-            stateMutability: "view",
-            type: "function",
-          },
-          {
-            inputs: [],
-            name: "owner",
-            outputs: [{ internalType: "address", name: "", type: "address" }],
-            stateMutability: "view",
-            type: "function",
-          },
-          {
-            inputs: [],
-            name: "renounceOwnership",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-          {
-            inputs: [
-              { internalType: "string", name: "key", type: "string" },
-              { internalType: "string", name: "value", type: "string" },
-            ],
-            name: "set",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-          {
-            inputs: [
-              { internalType: "address", name: "newOwner", type: "address" },
-            ],
-            name: "transferOwnership",
-            outputs: [],
-            stateMutability: "nonpayable",
-            type: "function",
-          },
-        ],
-        functionName: "set",
-        args: [ipAddress, digestId],
-      })
+      try {
+        writeContract({
+          address: "0xE0b82507493e0e625f2659608142f1a8F11A31F1",
+          chain: arbitrumSepolia,
+          abi: [
+            { inputs: [], stateMutability: "nonpayable", type: "constructor" },
+            {
+              inputs: [
+                { internalType: "address", name: "owner", type: "address" },
+              ],
+              name: "OwnableInvalidOwner",
+              type: "error",
+            },
+            {
+              inputs: [
+                { internalType: "address", name: "account", type: "address" },
+              ],
+              name: "OwnableUnauthorizedAccount",
+              type: "error",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "previousOwner",
+                  type: "address",
+                },
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "newOwner",
+                  type: "address",
+                },
+              ],
+              name: "OwnershipTransferred",
+              type: "event",
+            },
+            {
+              inputs: [{ internalType: "string", name: "key", type: "string" }],
+              name: "get",
+              outputs: [{ internalType: "string", name: "", type: "string" }],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "owner",
+              outputs: [{ internalType: "address", name: "", type: "address" }],
+              stateMutability: "view",
+              type: "function",
+            },
+            {
+              inputs: [],
+              name: "renounceOwnership",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                { internalType: "string", name: "key", type: "string" },
+                { internalType: "string", name: "value", type: "string" },
+              ],
+              name: "set",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                { internalType: "address", name: "newOwner", type: "address" },
+              ],
+              name: "transferOwnership",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ],
+          functionName: "set",
+          args: [ipAddress, digestId],
+        })
+      } catch (error) {
+        console.error("Error submitting transaction:", error)
+      }
     }
   }
 
@@ -150,7 +169,8 @@ export default function TerminalPage() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`
   }
 
-  const hasEnoughBalance = usdcBalance && parseFloat(usdcBalance.formatted) >= 0
+  const hasEnoughBalance =
+    usdcBalance && Number.parseFloat(usdcBalance.formatted) >= 0
   const [terminalText, setTerminalText] = useState("")
 
   useEffect(() => {
@@ -184,46 +204,59 @@ export default function TerminalPage() {
       setIsExecuting(true)
       setCommandResult("Starting deployment process...\n")
 
-      setCommandResult(prev => `${prev}Verifying docker-compose.yml exists...\n`)
-      
+      setCommandResult(
+        (prev) => `${prev}Verifying docker-compose.yml exists...\n`
+      )
+
       // Verify the docker-compose file exists
-      const fileCheckResponse = await fetch('/api/check-docker-compose')
+      const fileCheckResponse = await fetch("/api/check-docker-compose")
       if (!fileCheckResponse.ok) {
-        throw new Error('docker-compose.yml file not found in assets directory')
+        throw new Error("docker-compose.yml file not found in assets directory")
       }
-      
-      setCommandResult(prev => `${prev}docker-compose.yml found. Proceeding with deployment...\n\n`)
+
+      setCommandResult(
+        (prev) =>
+          `${prev}docker-compose.yml found. Proceeding with deployment...\n\n`
+      )
 
       // Replace variables in the command and ensure it's a single line
       const finalCommand = deploymentCommand
         .replace('"$PRIV_KEY"', `"${privateKey}"`)
         .replace('"$DURATION_MINUTES"', `"${durationMinutes}"`)
         .replace('"$DOCKER_COMPOSE_PATH"', `"${dockerComposePath}"`)
-        .replace(/\n/g, ' ') // Remove any newlines
+        .replace(/\n/g, " ") // Remove any newlines
         .trim() // Remove any extra spaces
-      
-      setCommandResult(prev => `${prev}\nExecuting command: ${deploymentCommand}\n\n`)
+
+      setCommandResult(
+        (prev) => `${prev}\nExecuting command: ${deploymentCommand}\n\n`
+      )
 
       // Execute the command
-      const response = await fetch('/api/execute-command', {
-        method: 'POST',
+      const response = await fetch("/api/execute-command", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ command: finalCommand })
+        body: JSON.stringify({ command: finalCommand }),
       })
-      
+
       const data = await response.json()
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to execute command')
+        throw new Error(data.error || "Failed to execute command")
       }
 
       setExecuteCommandResult(data.output)
-      setCommandResult(prev => `${prev}${data.output}\n\nDeployment completed successfully! ✅`)
+      setCommandResult(
+        (prev) =>
+          `${prev}${data.output}\n\nDeployment completed successfully! ✅`
+      )
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-      setCommandResult(prev => `${prev}\nError during deployment: ${errorMessage} ❌`)
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred"
+      setCommandResult(
+        (prev) => `${prev}\nError during deployment: ${errorMessage} ❌`
+      )
     } finally {
       setIsExecuting(false)
     }
@@ -246,15 +279,15 @@ export default function TerminalPage() {
   useEffect(() => {
     async function loadDockerCompose() {
       try {
-        const response = await fetch('/api/get-docker-compose')
+        const response = await fetch("/api/get-docker-compose")
         const data = await response.json()
         if (response.ok) {
           setDockerComposeContent(data.content)
         } else {
-          console.error('Failed to load docker-compose.yml:', data.error)
+          console.error("Failed to load docker-compose.yml:", data.error)
         }
       } catch (error) {
-        console.error('Error loading docker-compose.yml:', error)
+        console.error("Error loading docker-compose.yml:", error)
       }
     }
     loadDockerCompose()
@@ -264,25 +297,62 @@ export default function TerminalPage() {
   useEffect(() => {
     async function getDockerComposePath() {
       try {
-        const response = await fetch('/api/get-docker-compose-path')
+        const response = await fetch("/api/get-docker-compose-path")
         const data = await response.json()
         if (response.ok) {
           setDockerComposePath(data.path)
-          console.log('Docker compose path:', data.path)
+          console.log("Docker compose path:", data.path)
         } else {
-          console.error('Failed to get docker-compose path:', data.error)
+          console.error("Failed to get docker-compose path:", data.error)
         }
       } catch (error) {
-        console.error('Error getting docker-compose path:', error)
+        console.error("Error getting docker-compose path:", error)
       }
     }
     getDockerComposePath()
   }, [])
 
+  useEffect(() => {
+    if (isError && error) {
+      console.error("Contract write error:", error)
+    }
+  }, [isError, error])
+
   return (
     <div className="bg-black text-cyan-400 min-h-screen p-6 font-mono relative">
       {/* Main Content */}
       <div className="relative max-w-5xl mx-auto">
+        {transactionHash && (
+          <Alert className="mb-6 bg-green-900/20 border-green-900/50 text-green-400">
+            <CheckCircle2 className="h-4 w-4" />
+            <AlertTitle>Success!</AlertTitle>
+            <AlertDescription className="flex flex-col space-y-2">
+              <span>Your transaction has been submitted successfully.</span>
+              <a
+                href={`https://testnet.routescan.io/tx/${transactionHash}?chainid=421614`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:text-cyan-300 underline transition-colors flex items-center"
+              >
+                <span>View on Explorer</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 ml-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="flex items-center justify-between mb-8">
           <ConnectButton />
         </div>
@@ -336,7 +406,7 @@ export default function TerminalPage() {
                   }`}
                 >
                   {usdcBalance
-                    ? parseFloat(usdcBalance.formatted).toFixed(2)
+                    ? Number.parseFloat(usdcBalance.formatted).toFixed(2)
                     : "50"}{" "}
                   USDC
                 </div>
@@ -429,9 +499,7 @@ export default function TerminalPage() {
               <div className="mt-6 pt-4 border-t border-cyan-900/30">
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-gray-400">Duration (minutes)</span>
-                  <span className="text-xs text-cyan-400">
-                    Min: 5
-                  </span>
+                  <span className="text-xs text-cyan-400">Min: 5</span>
                 </div>
                 <div className="relative">
                   <input
@@ -439,7 +507,10 @@ export default function TerminalPage() {
                     min="5"
                     value={durationMinutes}
                     onChange={(e) => {
-                      const value = Math.max(parseInt(e.target.value) || 5, 5)
+                      const value = Math.max(
+                        Number.parseInt(e.target.value) || 5,
+                        5
+                      )
                       setDurationMinutes(value.toString())
                     }}
                     placeholder="Enter duration in minutes"
@@ -447,30 +518,56 @@ export default function TerminalPage() {
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex space-x-2">
                     <button
-                      onClick={() => setDurationMinutes(prev => (parseInt(prev) + 5).toString())}
+                      onClick={() =>
+                        setDurationMinutes((prev) =>
+                          (Number.parseInt(prev) + 5).toString()
+                        )
+                      }
                       className="text-cyan-400 hover:text-cyan-300 transition-colors p-1"
                       title="Increase by 5 minutes"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </button>
                     <button
-                      onClick={() => setDurationMinutes(prev => Math.max(parseInt(prev) - 5, 5).toString())}
+                      onClick={() =>
+                        setDurationMinutes((prev) =>
+                          Math.max(Number.parseInt(prev) - 5, 5).toString()
+                        )
+                      }
                       className="text-cyan-400 hover:text-cyan-300 transition-colors p-1"
                       title="Decrease by 5 minutes"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </button>
                   </div>
                 </div>
                 <p className="mt-2 text-xs text-gray-500">
-                  Deployment will automatically terminate after the specified duration
+                  Deployment will automatically terminate after the specified
+                  duration
                 </p>
               </div>
-
 
               {/* docker-compose.yml */}
               <div className="mt-6 pt-4 border-t border-cyan-900/30">
@@ -481,7 +578,9 @@ export default function TerminalPage() {
                       /assets/docker/wordpress/docker-compose.yml
                     </span>
                     <button
-                      onClick={() => navigator.clipboard.writeText(dockerComposeContent)}
+                      onClick={() =>
+                        navigator.clipboard.writeText(dockerComposeContent)
+                      }
                       className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
                     >
                       Copy
@@ -496,10 +595,10 @@ export default function TerminalPage() {
                   />
                 </div>
                 <p className="mt-2 text-xs text-gray-500">
-                  This configuration will be used for deploying your WordPress instance
+                  This configuration will be used for deploying your WordPress
+                  instance
                 </p>
               </div>
-
             </div>
           </div>
 
@@ -562,14 +661,13 @@ export default function TerminalPage() {
                 </div>
               </div>
 
-
               <div className="mt-4 p-4 border-t border-cyan-900/50">
                 <div className="flex justify-end">
                   <button
                     onClick={handleDeployClick}
                     disabled={isExecuting}
                     className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
-                      isExecuting 
+                      isExecuting
                         ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                         : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-cyan-600/30"
                     }`}
@@ -599,7 +697,7 @@ export default function TerminalPage() {
                         <span>Deploying...</span>
                       </div>
                     ) : (
-                      'Deploy TEE'
+                      "Deploy TEE"
                     )}
                   </button>
                 </div>
@@ -613,7 +711,9 @@ export default function TerminalPage() {
                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
-                  <span className="text-xs text-gray-400">deployment_output</span>
+                  <span className="text-xs text-gray-400">
+                    deployment_output
+                  </span>
                   <button
                     onClick={copyOutputToClipboard}
                     className="flex items-center space-x-1 px-2 py-1 rounded text-xs text-gray-400 hover:text-cyan-400 transition-colors"
@@ -621,33 +721,55 @@ export default function TerminalPage() {
                   >
                     {isCopied ? (
                       <>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
                           <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                          <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          <path
+                            fillRule="evenodd"
+                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                         <span>Copied!</span>
                       </>
                     ) : (
                       <>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                          />
                         </svg>
                         <span>Copy</span>
                       </>
                     )}
                   </button>
                 </div>
-                <div 
+                <div
                   ref={outputRef}
                   className="p-4 h-96 overflow-auto font-mono text-sm scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600"
                 >
-                  {commandResult.split('\n').map((line, index) => (
+                  {commandResult.split("\n").map((line, index) => (
                     <div key={index} className="flex">
                       {index === 0 && (
                         <span className="text-green-500 mr-2">$</span>
                       )}
-                      <span className="text-cyan-300 whitespace-pre-wrap">{line}</span>
-                      {index === commandResult.split('\n').length - 1 && (
+                      <span className="text-cyan-300 whitespace-pre-wrap">
+                        {line}
+                      </span>
+                      {index === commandResult.split("\n").length - 1 && (
                         <span className="animate-pulse ml-1">_</span>
                       )}
                     </div>
@@ -663,45 +785,56 @@ export default function TerminalPage() {
                       try {
                         setIsExtracting(true)
                         setExtractionError(null)
-                        
+
                         const userMessage: ChatMessage = {
-                          role: 'user',
-                          content: "Extract the IP address and the digest from the following text: " +
-                          executeCommandResult +
-                          " Return only a JSON with the values for the ip , digest and jobId, totalCost, totalRate, approvalTransaction. Don't return comment just the JSON object. Dont thrturn the word ```json or ```, just the plain JSON OBJECT"
+                          role: "user",
+                          content:
+                            "Extract the IP address and the digest from the following text: " +
+                            executeCommandResult +
+                            " Return only a JSON with the values for the ip , digest and jobId, totalCost, totalRate, approvalTransaction. Don't return comment just the JSON object. Dont thrturn the word ```json or ```, just the plain JSON OBJECT",
                         }
 
-                        console.log('****** userMessage:', userMessage);
+                        console.log("****** userMessage:", userMessage)
 
-                        const response = await fetch('/api/nillion-extract-info', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            messages: [...messages, userMessage],
-                          }),
-                        });                      
-                        
+                        const response = await fetch(
+                          "/api/nillion-extract-info",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              messages: [...messages, userMessage],
+                            }),
+                          }
+                        )
+
                         if (!response.ok) {
-                          throw new Error('Failed to extract values from deployment output')
+                          throw new Error(
+                            "Failed to extract values from deployment output"
+                          )
                         }
-                        
+
                         const data = await response.json()
 
-                        const extractedData = data.choices[0].message.content;
-                        const jsonData = JSON.parse(extractedData);
-                        
+                        const extractedData = data.choices[0].message.content
+                        const jsonData = JSON.parse(extractedData)
+
                         if (!jsonData.ip || !jsonData.digest) {
-                          throw new Error('Could not find IP or digest in the deployment output')
+                          throw new Error(
+                            "Could not find IP or digest in the deployment output"
+                          )
                         }
-                        
+
                         setIpAddress(jsonData.ip)
                         setDigestId(jsonData.digest)
-                        
                       } catch (error) {
-                        console.error('Error extracting values:', error)
-                        setExtractionError(error instanceof Error ? error.message : 'Failed to extract values')
+                        console.error("Error extracting values:", error)
+                        setExtractionError(
+                          error instanceof Error
+                            ? error.message
+                            : "Failed to extract values"
+                        )
                       } finally {
                         setIsExtracting(false)
                       }
@@ -738,7 +871,7 @@ export default function TerminalPage() {
                         <span>Extracting Values...</span>
                       </div>
                     ) : (
-                      'Get IP and Digest'
+                      "Get IP and Digest"
                     )}
                   </Button>
                 </div>
@@ -785,7 +918,9 @@ export default function TerminalPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     </div>
-                    <span className="text-xs text-gray-400">verify_terminal</span>
+                    <span className="text-xs text-gray-400">
+                      verify_terminal
+                    </span>
                     <div></div>
                   </div>
 
@@ -793,7 +928,11 @@ export default function TerminalPage() {
                     <div className="mb-4 flex items-center">
                       <span className="text-green-500 mr-2">$</span>
                       <span className="text-cyan-300">
-                        {`oyster-cvm verify --enclave-ip ${ipAddress || "$IP"} --user-data ${digestId || "$DIGEST"} --pcr-preset base/blue/v1.0.0/arm64`}
+                        {`oyster-cvm verify --enclave-ip ${
+                          ipAddress || "$IP"
+                        } --user-data ${
+                          digestId || "$DIGEST"
+                        } --pcr-preset base/blue/v1.0.0/arm64`}
                       </span>
                       <button
                         onClick={() => {
@@ -828,28 +967,47 @@ export default function TerminalPage() {
                         onClick={async () => {
                           try {
                             setIsVerifying(true)
-                            setVerifyOutput("Starting verification process...\n")
+                            setVerifyOutput(
+                              "Starting verification process...\n"
+                            )
 
                             const verifyCommand = `oyster-cvm verify --enclave-ip ${ipAddress} --user-data ${digestId} --pcr-preset base/blue/v1.0.0/arm64`
 
-                            const response = await fetch('/api/execute-command', {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              body: JSON.stringify({ command: verifyCommand })
-                            })
+                            const response = await fetch(
+                              "/api/execute-command",
+                              {
+                                method: "POST",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                  command: verifyCommand,
+                                }),
+                              }
+                            )
 
                             const data = await response.json()
 
                             if (!response.ok) {
-                              throw new Error(data.error || 'Failed to execute verification command')
+                              throw new Error(
+                                data.error ||
+                                  "Failed to execute verification command"
+                              )
                             }
 
-                            setVerifyOutput(prev => `${prev}${data.output}\n\nVerification completed successfully! ✅`)
+                            setVerifyOutput(
+                              (prev) =>
+                                `${prev}${data.output}\n\nVerification completed successfully! ✅`
+                            )
                           } catch (error) {
-                            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
-                            setVerifyOutput(prev => `${prev}\nError during verification: ${errorMessage} ❌`)
+                            const errorMessage =
+                              error instanceof Error
+                                ? error.message
+                                : "An unknown error occurred"
+                            setVerifyOutput(
+                              (prev) =>
+                                `${prev}\nError during verification: ${errorMessage} ❌`
+                            )
                           } finally {
                             setIsVerifying(false)
                           }
@@ -886,7 +1044,7 @@ export default function TerminalPage() {
                             <span>Verifying...</span>
                           </div>
                         ) : (
-                          'Verify TEE'
+                          "Verify TEE"
                         )}
                       </button>
                     </div>
@@ -913,33 +1071,55 @@ export default function TerminalPage() {
                     >
                       {isCopied ? (
                         <>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                            <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            <path
+                              fillRule="evenodd"
+                              d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                           <span>Copied!</span>
                         </>
                       ) : (
                         <>
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+                            />
                           </svg>
                           <span>Copy</span>
                         </>
                       )}
                     </button>
                   </div>
-                  <div 
+                  <div
                     ref={outputRef}
                     className="p-4 h-96 overflow-auto font-mono text-sm scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600"
                   >
-                    {verifyOutput.split('\n').map((line, index) => (
+                    {verifyOutput.split("\n").map((line, index) => (
                       <div key={index} className="flex">
                         {index === 0 && (
                           <span className="text-green-500 mr-2">$</span>
                         )}
-                        <span className="text-cyan-300 whitespace-pre-wrap">{line}</span>
-                        {index === verifyOutput.split('\n').length - 1 && (
+                        <span className="text-cyan-300 whitespace-pre-wrap">
+                          {line}
+                        </span>
+                        {index === verifyOutput.split("\n").length - 1 && (
                           <span className="animate-pulse ml-1">_</span>
                         )}
                       </div>
@@ -956,43 +1136,58 @@ export default function TerminalPage() {
                       try {
                         setIsPcrExtracting(true)
                         setPcrExtractionError(null)
-                        
+
                         const userMessage: ChatMessage = {
-                          role: 'user',
-                          content: "Extract the PCR0, PCR1, and PCR2 values from the following text: " +
-                          verifyOutput +
-                          " Return only a JSON with the values for pcr0, pcr1, and pcr2. Don't return comment just the JSON object. Don't return the word ```json or ```, just the plain JSON OBJECT"
+                          role: "user",
+                          content:
+                            "Extract the PCR0, PCR1, and PCR2 values from the following text: " +
+                            verifyOutput +
+                            " Return only a JSON with the values for pcr0, pcr1, and pcr2. Don't return comment just the JSON object. Don't return the word ```json or ```, just the plain JSON OBJECT",
                         }
 
-                        const response = await fetch('/api/nillion-extract-info', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            messages: [...messages, userMessage],
-                          }),
-                        });                      
-                        
+                        const response = await fetch(
+                          "/api/nillion-extract-info",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              messages: [...messages, userMessage],
+                            }),
+                          }
+                        )
+
                         if (!response.ok) {
-                          throw new Error('Failed to extract PCR values from verification output')
+                          throw new Error(
+                            "Failed to extract PCR values from verification output"
+                          )
                         }
-                        
+
                         const data = await response.json()
-                        const extractedData = data.choices[0].message.content;
-                        const jsonData = JSON.parse(extractedData);
-                        
-                        if (!jsonData.pcr0 || !jsonData.pcr1 || !jsonData.pcr2) {
-                          throw new Error('Could not find PCR values in the verification output')
+                        const extractedData = data.choices[0].message.content
+                        const jsonData = JSON.parse(extractedData)
+
+                        if (
+                          !jsonData.pcr0 ||
+                          !jsonData.pcr1 ||
+                          !jsonData.pcr2
+                        ) {
+                          throw new Error(
+                            "Could not find PCR values in the verification output"
+                          )
                         }
-                        
+
                         setPcr0(jsonData.pcr0)
                         setPcr1(jsonData.pcr1)
                         setPcr2(jsonData.pcr2)
-                        
                       } catch (error) {
-                        console.error('Error extracting PCR values:', error)
-                        setPcrExtractionError(error instanceof Error ? error.message : 'Failed to extract PCR values')
+                        console.error("Error extracting PCR values:", error)
+                        setPcrExtractionError(
+                          error instanceof Error
+                            ? error.message
+                            : "Failed to extract PCR values"
+                        )
                       } finally {
                         setIsPcrExtracting(false)
                       }
@@ -1029,7 +1224,7 @@ export default function TerminalPage() {
                         <span>Extracting PCR Values...</span>
                       </div>
                     ) : (
-                      'Get PCR Values'
+                      "Get PCR Values"
                     )}
                   </Button>
                 </div>
@@ -1080,6 +1275,7 @@ export default function TerminalPage() {
               {/* Configuration */}
               <div className="p-6 border-t border-cyan-900/50">
                 <div className="space-y-5">
+                  <h3>Add Details</h3>
                   <div>
                     <label className="block text-cyan-300 mb-2 text-sm font-medium">
                       IP Address
@@ -1098,7 +1294,7 @@ export default function TerminalPage() {
 
                   <div>
                     <label className="block text-cyan-300 mb-2 text-sm font-medium">
-                      Digest ID
+                      PCR Value
                     </label>
                     <div className="relative">
                       <input
@@ -1120,17 +1316,9 @@ export default function TerminalPage() {
                     >
                       <button
                         onClick={handleSubmit}
-                        disabled={
-                          !digestId ||
-                          !ipAddress ||
-                          !hasEnoughBalance ||
-                          isPending
-                        }
+                        disabled={!digestId || isPending}
                         className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
-                          !digestId ||
-                          !ipAddress ||
-                          !hasEnoughBalance ||
-                          isPending
+                          !digestId || isPending
                             ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                             : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-cyan-600/30"
                         }`}
@@ -1167,7 +1355,6 @@ export default function TerminalPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
