@@ -1,15 +1,17 @@
 require("dotenv").config();
 const express = require("express");
 const { ethers } = require("ethers");
+const cors = require("cors");
 const abi = require("./abi.json");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, provider);
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,7 +31,7 @@ app.get("/getValue", async (req, res) => {
     console.log('result is', result);
     res.json({ result });
   } catch (err) {
-    console.error('error is ',err);
+    console.error('error is ', err);
     res.status(500).json({ error: "Error reading values." });
   }
 });
@@ -81,6 +83,12 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// Export the app for Vercel
+module.exports = app;
+
+// Only listen if we're running directly (not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
