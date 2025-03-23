@@ -1,0 +1,46 @@
+FROM node:18-alpine AS base
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies with legacy-peer-deps flag
+RUN npm install --legacy-peer-deps
+
+# Copy the rest of the application
+COPY . .
+
+# Build application
+RUN npm run build
+
+# Install required packages for production image
+FROM ubuntu:22.04 AS runner
+WORKDIR /app
+
+# Install Node.js and other dependencies
+RUN apt-get update && apt-get install -y wget curl gnupg
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
+# Install oyster-cvm binary
+RUN wget https://artifacts.marlin.org/oyster/binaries/oyster-cvm_latest_linux_amd64 -O /usr/local/bin/oyster-cvm && chmod +x /usr/local/bin/oyster-cvm
+
+# Set production environment
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Copy built application
+COPY --from=base /app/public ./public
+COPY --from=base /app/.next ./.next
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/.env ./.env
+
+# Expose port
+EXPOSE 3000
+ENV PORT 3000
+
+# Start the application
+CMD ["npm", "start"]
