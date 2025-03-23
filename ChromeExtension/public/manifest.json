@@ -1,26 +1,46 @@
 {
   "manifest_version": 3,
   "name": "TEE Shield",
-  "description": "TEE Shield",
-  "version": "1.0",
+  "version": "1.0.0",
+  "description": "Verifies web applications against trusted blockchain records",
   "action": {
     "default_popup": "index.html",
-    "default_title": "Open the popup"
+    "default_icon": {
+      "16": "logo16.png",
+      "48": "logo48.png",
+      "128": "logo128.png"
+    }
   },
-  "permissions": ["storage", "activeTab", "tabs", "scripting"],
-  "host_permissions": ["<all_urls>"],
   "icons": {
-    "16": "logo192.png",
-    "48": "logo192.png",
-    "128": "logo192.png"
+    "16": "logo16.png",
+    "48": "logo48.png",
+    "128": "logo128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["provider-detector.js"],
+      "run_at": "document_start"
     }
   ],
-  "background": {
-    "service_worker": "background.js"
-  }
+  "web_accessible_resources": [
+    {
+      "resources": ["logo128.png", "logo512.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

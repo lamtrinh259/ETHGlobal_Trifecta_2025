@@ -14,12 +14,6 @@ function App() {
     switch(activeTab) {
       case "home":
         return <Home />
-      case "comparison":
-        // To be implemented
-        return <HashComparison/>
-      case "settings":
-        // To be implemented
-        return <div>Settings tab content</div>
       default:
         return <Home />
     }
@@ -36,18 +30,6 @@ function App() {
               onClick={() => setActiveTab("home")}
             >
               Home
-            </div>
-            <div 
-              className={`nav-tab ${activeTab === "comparison" ? "active" : ""}`}
-              onClick={() => setActiveTab("comparison")}
-            >
-              Hash comparison
-            </div>
-            <div 
-              className={`nav-tab ${activeTab === "settings" ? "active" : ""}`}
-              onClick={() => setActiveTab("settings")}
-            >
-              Settings
             </div>
           </div>
         </div>
