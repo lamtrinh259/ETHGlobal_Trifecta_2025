@@ -22,6 +22,7 @@ The flow of the app will be like following:
 ## Future Work
 Some thoughts for how the whole project can be built out further:
 - Productize this project so that other dapps can deploy their front-end in a TEE
+- Implement a function to extract the value of the digest from the Enclave IP's attestation. It's too time-consuming and complex to be done in a weekend hackathon.
 - Upgrade and add more features into the Chrome extension
 
 ## Deployed contract (all verified)
