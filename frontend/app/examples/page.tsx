@@ -63,7 +63,7 @@ function BeamsBackground({ intensity = "medium" }) {
 
     function resetBeam(beam:any, index:any, totalBeams:any) {
       if (!canvas) return beam;
-      
+
       const column = index % 3;
       const spacing = canvas.width / 3;
 
@@ -190,12 +190,12 @@ function ExampleSite({
       <Card onClick={handleClick} className={`p-6 h-full rounded-xl cursor-pointer z-40 border-2 ${
         isMalicious ? "border-red-500/30 bg-red-950/10" : "border-green-500/30 bg-green-950/10"
       } transition-all duration-300 group relative`}>
-        
+
         <div className="flex items-start gap-4 relative z-10">
           <div className={`p-3 rounded-lg ${isMalicious ? "bg-red-500/10 text-red-400" : "bg-green-500/10 text-green-400"}`}>
             {isMalicious ? <AlertCircle size={24} /> : <CheckCircle size={24} />}
           </div>
-          
+
           <div className="flex-1">
             <h3 className="text-xl font-semibold text-white/90 mb-2 flex items-center gap-2">
               {title}
@@ -203,21 +203,21 @@ function ExampleSite({
                 {isMalicious ? "Compromised" : "Secure"}
               </span>
             </h3>
-            
+
             <p className="text-white/60 text-sm mb-4">{description}</p>
-            
-          
+
+
           </div>
         </div>
-        
+
         {/* Move the decorative element below content and ensure it doesn't block interactions */}
-        {/* <div 
+        {/* <div
           className={`absolute top-0 right-0 w-20 h-20 -translate-y-10 translate-x-10 rounded-full blur-2xl z-0 ${
             isMalicious ? "bg-red-500/20" : "bg-green-500/20"
-          }`} 
+          }`}
         /> */}
       </Card>
- 
+
   );
 }
 export default function ExamplesPage() {
@@ -238,16 +238,16 @@ export default function ExamplesPage() {
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Background */}
       <BeamsBackground intensity="medium" />
-      
+
       {/* Additional background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute h-80 w-80 rounded-full bg-purple-600/10 blur-3xl -top-20 -left-20" />
         <div className="absolute h-60 w-60 rounded-full bg-blue-600/10 blur-3xl top-1/4 right-10" />
         <div className="absolute h-80 w-80 rounded-full bg-cyan-600/10 blur-3xl bottom-20 -right-20" />
-        
+
         {/* Grid pattern */}
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] bg-[length:40px_40px] opacity-5" />
-        
+
         {/* Shine effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent blur-sm" />
       </div>
@@ -275,7 +275,7 @@ export default function ExamplesPage() {
           animate="visible"
           className="text-2xl md:text-6xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400"
         >
-          Test TEE Sheild
+          Test TEE Shield
         </motion.h1>
 
         <motion.p
@@ -314,7 +314,7 @@ export default function ExamplesPage() {
             isMalicious={false}
             delay={0.4}
           />
-          
+
           <ExampleSite
             title="Compromised Safe Global App"
             description="This simulates a compromised frontend. Our extension will detect the tampering and alert you before any interaction can occur."
@@ -332,20 +332,20 @@ export default function ExamplesPage() {
           className="mt-16 text-center"
         >
           <h2 className="text-xl md:text-2xl font-medium mb-6 text-white/80">How Does The Protection Work?</h2>
-          
+
           <div className="max-w-3xl mx-auto grid md:grid-cols-3 gap-6 text-white/60">
             <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5">
               <div className="bg-blue-500/10 text-blue-400 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">1</div>
               <h3 className="text-white/90 font-medium mb-2">Hash Verification</h3>
               <p className="text-sm">Smart contracts store cryptographic hashes of legitimate frontend code.</p>
             </div>
-            
+
             <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/5">
               <div className="bg-indigo-500/10 text-indigo-400 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">2</div>
               <h3 className="text-white/90 font-medium mb-2">Real-time Checks</h3>
               <p className="text-sm">Our extension compares loaded website code against on-chain verification.</p>
             </div>
-            
+
             <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 border border-white/10 hover:border-white/20 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/5">
               <div className="bg-purple-500/10 text-purple-400 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">3</div>
               <h3 className="text-white/90 font-medium mb-2">Instant Protection</h3>
