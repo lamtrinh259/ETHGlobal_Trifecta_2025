@@ -974,7 +974,7 @@ export default function TerminalPage() {
                               "Starting verification process...\n"
                             )
 
-                            const verifyCommand = `oyster-cvm verify --enclave-ip ${ipAddress} --user-data ${digestId} --pcr-preset base/blue/v1.0.0/arm64`
+                            const verifyCommand = `oyster-cvm verify --enclave-ip ${ipAddress} --pcr-preset base/blue/v1.0.0/arm64`
 
                             const response = await fetch(
                               "/api/execute-command",
