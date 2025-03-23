@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    image: lamtrinh259/testsafeglobal:latest
+    network_mode: host
+    environment:
+      - NODE_ENV=production
+    command: ["npm", "run", "start"]
+    restart: until-stopped

@@ -6,7 +6,7 @@ import { Metadata } from "next"
 import { RainbowKitProvider, getDefaultConfig } from "@rainbow-me/rainbowkit"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { WagmiProvider } from "wagmi"
-import {arbitrumSepolia} from "wagmi/chains"
+import {arbitrum, arbitrumSepolia} from "wagmi/chains"
 
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/lib/fonts"
@@ -18,7 +18,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const config = getDefaultConfig({
   appName: "My RainbowKit App",
   projectId: "25195dd15a9741bb3dc1f86d8f11cf1d",
-  chains: [arbitrumSepolia],
+  chains: [arbitrumSepolia, arbitrum],
   ssr: true,
 })
 const queryClient = new QueryClient()
