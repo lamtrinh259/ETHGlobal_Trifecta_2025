@@ -7,10 +7,10 @@ import BashTerminal from "@/components/bash-terminal"
 
 export default function IndexPage() {
   return (
-    
+
    <> <HeroGeometric badge="TEE"
    title1 = "TEE"
-   title2 = "Sheild" />
+   title2 = "Shield" />
 </>
   )
 }
