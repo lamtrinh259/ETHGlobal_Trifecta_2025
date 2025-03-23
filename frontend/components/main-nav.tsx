@@ -5,8 +5,10 @@ import { NavItem } from "@/types/nav"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { Icons } from "@/components/icons"
+import logo from "../../Images/TEE-Shield-logo-2.png"
 import { Home, User, Briefcase, FileText } from 'lucide-react'
 import { NavBar } from "@/components/ui/tubelight-navbar"
+import Image from "next/image"
 
 interface MainNavProps {
   items?: NavItem[]
@@ -40,6 +42,7 @@ export function MainNav({ items }: MainNavProps) {
   return (
     <div className="flex gap-6 md:gap-10  my-2">
       <Link href="/" className="flex items-center space-x-2">
+      <Image src={logo} alt="Logo" className="h-12 w-12 rounded-full" />
         <span className="inline-block font-bold">{siteConfig.name}</span>
       </Link>
       <NavBar items={navItems} />

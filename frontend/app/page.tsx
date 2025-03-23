@@ -10,7 +10,7 @@ export default function IndexPage() {
     
    <> <HeroGeometric badge="TEE"
    title1 = "TEE"
-   title2 = "Sheild" />
+   title2 = "Shield" />
 </>
   )
 }

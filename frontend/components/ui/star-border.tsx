@@ -23,9 +23,9 @@ export function StarBorder<T extends ElementType = "button">({
   return (
     <Component 
       className={cn(
-        "relative inline-block py-[1px] overflow-hidden rounded-[20px]",
+        "relative inline-block py-[1px] overflow-hidden rounded-[20px] cursor-pointer",
         className
-      )} 
+      )}
       {...props}
     >
       <div

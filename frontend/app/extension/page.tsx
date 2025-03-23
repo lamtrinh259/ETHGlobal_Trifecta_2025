@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useEffect, useRef } from "react";
-
+import { saveAs } from 'file-saver';
 // BeamsBackground component (reused from examples page)
 function BeamsBackground({ intensity = "medium" }) {
   const canvasRef = useRef(null);
@@ -247,17 +247,15 @@ export default function ExtensionPage() {
     }),
   };
 
-  const downloadExtension = () => {
-    console.log("Extension download initiated");
-    // In a real implementation, you would use something like:
-    // const link = document.createElement('a');
-    // link.href = '/path-to-build.zip';
-    // link.download = 'tee-shield-extension.zip';
-    // document.body.appendChild(link);
-    // link.click();
-    // document.body.removeChild(link);
-  };
 
+
+// Then update the downloadExtension function
+const downloadExtension = () => {
+  console.log("Extension download initiated");
+  // Use file-saver to trigger the download
+  // The first parameter is the file path, the second is the download filename
+  saveAs("/build.zip", 'tee-shield-extension.zip');
+};
   return (
     <div className="min-h-screen w-full relative overflow-hidden">
       {/* Background */}
