@@ -9,6 +9,15 @@ const port = 3000;
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS, abi, provider);
 
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Basic health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.get("/getValue", async (req, res) => {
   try {
     const val = req.query.value;
@@ -58,7 +67,20 @@ app.get("/getAttestation", async (req, res) => {
   }
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: 'Something went wrong!',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Handle 404 routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
 app.listen(port, () => {
-  console.log(`listening on port http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
