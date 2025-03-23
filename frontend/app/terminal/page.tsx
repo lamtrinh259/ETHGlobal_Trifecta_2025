@@ -45,6 +45,11 @@ export default function TerminalPage() {
   const [dockerComposeContent, setDockerComposeContent] = useState("")
   const [extractionError, setExtractionError] = useState<string | null>(null)
   const [isExtracting, setIsExtracting] = useState(false)
+  const [pcr0, setPcr0] = useState("")
+  const [pcr1, setPcr1] = useState("")
+  const [pcr2, setPcr2] = useState("")
+  const [isPcrExtracting, setIsPcrExtracting] = useState(false)
+  const [pcrExtractionError, setPcrExtractionError] = useState<string | null>(null)
 
   const { address, isConnected } = useAccount()
   const { data: usdcBalance } = useBalance({
@@ -197,7 +202,7 @@ export default function TerminalPage() {
         .replace(/\n/g, ' ') // Remove any newlines
         .trim() // Remove any extra spaces
       
-      setCommandResult(prev => `${prev}\nExecuting command: ${finalCommand}\n\n`)
+      setCommandResult(prev => `${prev}\nExecuting command: ${deploymentCommand}\n\n`)
 
       // Execute the command
       const response = await fetch('/api/execute-command', {
@@ -668,7 +673,7 @@ export default function TerminalPage() {
 
                         console.log('****** userMessage:', userMessage);
 
-                        const response = await fetch('/api/extract-digest', {
+                        const response = await fetch('/api/nillion-extract-info', {
                           method: 'POST',
                           headers: {
                             'Content-Type': 'application/json',
@@ -939,6 +944,135 @@ export default function TerminalPage() {
                         )}
                       </div>
                     ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Extract PCR0, PCR1, PCR2 */}
+              <div className="mt-4 p-4 border-t border-cyan-900/50">
+                <div className="flex justify-end">
+                  <Button
+                    onClick={async () => {
+                      try {
+                        setIsPcrExtracting(true)
+                        setPcrExtractionError(null)
+                        
+                        const userMessage: ChatMessage = {
+                          role: 'user',
+                          content: "Extract the PCR0, PCR1, and PCR2 values from the following text: " +
+                          verifyOutput +
+                          " Return only a JSON with the values for pcr0, pcr1, and pcr2. Don't return comment just the JSON object. Don't return the word ```json or ```, just the plain JSON OBJECT"
+                        }
+
+                        const response = await fetch('/api/nillion-extract-info', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            messages: [...messages, userMessage],
+                          }),
+                        });                      
+                        
+                        if (!response.ok) {
+                          throw new Error('Failed to extract PCR values from verification output')
+                        }
+                        
+                        const data = await response.json()
+                        const extractedData = data.choices[0].message.content;
+                        const jsonData = JSON.parse(extractedData);
+                        
+                        if (!jsonData.pcr0 || !jsonData.pcr1 || !jsonData.pcr2) {
+                          throw new Error('Could not find PCR values in the verification output')
+                        }
+                        
+                        setPcr0(jsonData.pcr0)
+                        setPcr1(jsonData.pcr1)
+                        setPcr2(jsonData.pcr2)
+                        
+                      } catch (error) {
+                        console.error('Error extracting PCR values:', error)
+                        setPcrExtractionError(error instanceof Error ? error.message : 'Failed to extract PCR values')
+                      } finally {
+                        setIsPcrExtracting(false)
+                      }
+                    }}
+                    className={`relative px-8 py-3 rounded-xl font-bold overflow-hidden transition-all duration-300 shadow-lg z-20 ${
+                      !verifyOutput || isPcrExtracting
+                        ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-500 hover:to-blue-500 shadow-cyan-600/30"
+                    }`}
+                    disabled={!verifyOutput || isPcrExtracting}
+                  >
+                    {isPcrExtracting ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        <span>Extracting PCR Values...</span>
+                      </div>
+                    ) : (
+                      'Get PCR Values'
+                    )}
+                  </Button>
+                </div>
+
+                {pcrExtractionError && (
+                  <div className="mt-2 p-2 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
+                    {pcrExtractionError}
+                  </div>
+                )}
+
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-cyan-300 mb-2 text-sm font-medium">
+                      PCR0 Value
+                    </label>
+                    <input
+                      type="text"
+                      value={pcr0}
+                      readOnly
+                      className="w-full bg-gray-800 border border-cyan-900/70 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white shadow-sm font-mono text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-cyan-300 mb-2 text-sm font-medium">
+                      PCR1 Value
+                    </label>
+                    <input
+                      type="text"
+                      value={pcr1}
+                      readOnly
+                      className="w-full bg-gray-800 border border-cyan-900/70 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white shadow-sm font-mono text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-cyan-300 mb-2 text-sm font-medium">
+                      PCR2 Value
+                    </label>
+                    <input
+                      type="text"
+                      value={pcr2}
+                      readOnly
+                      className="w-full bg-gray-800 border border-cyan-900/70 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-white shadow-sm font-mono text-sm"
+                    />
                   </div>
                 </div>
               </div>
