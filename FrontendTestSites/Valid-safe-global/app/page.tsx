@@ -26,6 +26,10 @@ import TransactionHistoryPage from "@/app/home/components/TransactionHistory";
 import { useAccount } from "wagmi";
 
 export default function MainApp() {
+  const truncateAddress = (addr:any) => {
+    if (!addr) return "";
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+  };
   const {address}=useAccount()
   return (
     <div className="min-h-screen bg-black text-white flex">
@@ -65,8 +69,7 @@ export default function MainApp() {
             </svg>
           </div>
           <div>
-            <div className="text-xs text-gray-400">{address}</div>
-            <div className="font-medium">$0</div>
+            <div className="text-xs text-gray-400">{truncateAddress(address)}</div>
           </div>
           <button className="ml-auto text-gray-400">
             <ChevronDown size={16} />
@@ -216,7 +219,7 @@ export default function MainApp() {
 
           <div className="flex space-x-2">
             <Button className="bg-green-500 hover:bg-green-600 text-black">
-              <Plus size={16} className="mr-2" /> Buy crypto
+             Transfer
             </Button>
             <Button variant="outline" className="border-gray-700">
               <Send size={16} className="mr-2" /> Send
