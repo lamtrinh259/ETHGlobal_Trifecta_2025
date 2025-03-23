@@ -4,7 +4,7 @@ addEventListener('fetch', event => {
 
 async function handle(request) {
   try {
-    const baseUrl = 'https://db9e-2800-484-782-1b00-4411-86b5-df9-f388.ngrok-free.app';
+    const baseUrl = 'https://4680-149-102-224-183.ngrok-free.app';
     const input = await request.json();
     const host = input.host;
 

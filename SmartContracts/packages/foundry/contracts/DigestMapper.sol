@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract DigestMapper is Ownable {
     mapping(string => string) private data;
 
+    event DataUpdated(string key, string newValue, uint256 timestamp);
+
     constructor() Ownable(msg.sender) {}
 
     function get(string memory key) public view returns (string memory) {
@@ -14,5 +16,6 @@ contract DigestMapper is Ownable {
 
     function set(string memory key, string memory value) public onlyOwner {
         data[key] = value;
+        emit DataUpdated(key, value, block.timestamp);
     }
 }
