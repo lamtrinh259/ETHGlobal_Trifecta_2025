@@ -17,7 +17,7 @@ export function MainNav({ items }: MainNavProps) {
   const navItems = [
     { 
       name: 'Home', 
-      url: '#', 
+      url: '/', 
       icon: <Home size={18} strokeWidth={2.5} /> 
     },
     { 
@@ -27,12 +27,12 @@ export function MainNav({ items }: MainNavProps) {
     },
     { 
       name: 'Examples', 
-      url: '#', 
+      url: '/examples', 
       icon: <Briefcase size={18} strokeWidth={2.5} /> 
     },
     { 
-      name: 'About', 
-      url: '#', 
+      name: 'Dashboard', 
+      url: '/terminal', 
       icon: <FileText size={18} strokeWidth={2.5} /> 
     }
   ]
