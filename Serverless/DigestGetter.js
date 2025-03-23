@@ -4,7 +4,7 @@ addEventListener('fetch', event => {
 
 async function handle(request) {
   try {
-    const baseUrl = 'https://4680-149-102-224-183.ngrok-free.app';
+    const baseUrl = 'https://teeshield-backend.vercel.app';
     const input = await request.json();
     const host = input.host;
 
