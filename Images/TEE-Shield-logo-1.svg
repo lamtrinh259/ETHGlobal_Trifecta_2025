@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <!-- Background -->
+  <rect width="500" height="500" fill="#f7f9fc" rx="20" ry="20"/>
+  
+  <!-- Shield outline -->
+  <path d="M250 50 L400 120 L400 250 C400 350 350 400 250 450 C150 400 100 350 100 250 L100 120 Z" 
+        fill="#4a6ee0" stroke="#2a4cbd" stroke-width="8"/>
+  
+  <!-- Inner shield gradient -->
+  <defs>
+    <linearGradient id="shield-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6283ff" />
+      <stop offset="100%" stop-color="#3a5ccc" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Inner shield -->
+  <path d="M250 80 L370 140 L370 250 C370 330 330 380 250 420 C170 380 130 330 130 250 L130 140 Z" 
+        fill="url(#shield-gradient)"/>
+  
+  <!-- Blockchain pattern symbolizing on-chain verification -->
+  <g fill="none" stroke="#ffffff" stroke-width="3" opacity="0.4">
+    <path d="M175 180 L325 180" />
+    <path d="M175 220 L325 220" />
+    <path d="M175 260 L325 260" />
+    <path d="M175 300 L325 300" />
+    <path d="M200 160 L200 320" />
+    <path d="M250 160 L250 320" />
+    <path d="M300 160 L300 320" />
+  </g>
+  
+  <!-- Lock symbol representing security -->
+  <rect x="220" y="230" width="60" height="50" rx="10" ry="10" fill="#ffffff"/>
+  <rect x="230" y="200" width="40" height="40" rx="20" ry="20" fill="none" stroke="#ffffff" stroke-width="12"/>
+  
+  <!-- TEE text -->
+  <text x="250" y="350" font-family="Arial, sans-serif" font-size="36" font-weight="bold" 
+        text-anchor="middle" fill="#ffffff">TEE</text>
+  
+  <!-- Hash symbol # representing hash verification -->
+  <g transform="translate(250, 175) scale(0.6)">
+    <path d="M-30 -30 L30 30 M-30 30 L30 -30 M-30 0 L30 0 M0 -30 L0 30" 
+          stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>
